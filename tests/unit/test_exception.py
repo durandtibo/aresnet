@@ -308,3 +308,68 @@ def test_http_request_error_exception_message_in_traceback() -> None:
         raise HttpRequestError(
             method="GET", url="https://example.com", message="Custom error message"
         )
+
+
+def test_http_request_error_status_code_zero() -> None:
+    """Test HttpRequestError with status code of 0."""
+    error = HttpRequestError(
+        method="GET",
+        url="https://example.com",
+        message="Invalid status code",
+        status_code=0,
+    )
+
+    assert error.status_code == 0
+    assert "status_code=0" in repr(error)
+
+
+def test_http_request_error_none_vs_zero_status_code() -> None:
+    """Test distinction between None and 0 status codes."""
+    error_none = HttpRequestError(
+        method="GET",
+        url="https://example.com",
+        message="No status",
+        status_code=None,
+    )
+    error_zero = HttpRequestError(
+        method="GET",
+        url="https://example.com",
+        message="Zero status",
+        status_code=0,
+    )
+
+    assert error_none.status_code is None
+    assert error_zero.status_code == 0
+    assert "status_code=None" in repr(error_none)
+    assert "status_code=0" in repr(error_zero)
+
+
+def test_http_request_error_very_long_url() -> None:
+    """Test HttpRequestError with extremely long URL."""
+    long_url = "https://example.com/" + "a" * 10000
+    error = HttpRequestError(
+        method="GET",
+        url=long_url,
+        message="Request to very long URL failed",
+    )
+
+    assert error.url == long_url
+    assert len(error.url) > 10000
+
+
+def test_http_request_error_repr_is_consistent() -> None:
+    """Test that repr produces consistent output."""
+    error = HttpRequestError(
+        method="POST",
+        url="https://api.example.com/test",
+        message="Test message",
+        status_code=500,
+    )
+
+    repr1 = repr(error)
+    repr2 = repr(error)
+
+    assert repr1 == repr2
+    assert "method='POST'" in repr1
+    assert "url='https://api.example.com/test'" in repr1
+    assert "status_code=500" in repr1

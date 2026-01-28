@@ -38,3 +38,50 @@ def test_get_with_non_retryable_status_fails_immediately() -> None:
     retries."""
     with pytest.raises(httpx.HTTPStatusError):
         get_with_automatic_retry(url=f"{HTTPBIN_URL}/status/404")
+
+
+def test_get_with_automatic_retry_redirect_chain() -> None:
+    """Test GET request that follows a redirect chain."""
+    # httpbin.org supports redirects: /redirect/n redirects n times
+    response = get_with_automatic_retry(url=f"{HTTPBIN_URL}/redirect/3")
+
+    assert response.status_code == 200
+    # After redirects, we should end up at /get
+    response_data = response.json()
+    assert "url" in response_data
+
+
+def test_get_with_automatic_retry_large_response() -> None:
+    """Test GET request with large response body."""
+    # Request a large amount of bytes (10KB)
+    response = get_with_automatic_retry(url=f"{HTTPBIN_URL}/bytes/10240")
+
+    assert response.status_code == 200
+    assert len(response.content) == 10240
+
+
+def test_get_with_automatic_retry_with_headers() -> None:
+    """Test GET request with custom headers."""
+    custom_headers = {"X-Custom-Header": "test-value", "User-Agent": "aresnet-test"}
+
+    with httpx.Client() as client:
+        response = get_with_automatic_retry(
+            url=f"{HTTPBIN_URL}/headers", client=client, headers=custom_headers
+        )
+
+    assert response.status_code == 200
+    response_data = response.json()
+    assert "X-Custom-Header" in response_data["headers"]
+    assert response_data["headers"]["X-Custom-Header"] == "test-value"
+
+
+def test_get_with_automatic_retry_with_query_params() -> None:
+    """Test GET request with query parameters."""
+    params = {"param1": "value1", "param2": "value2"}
+
+    response = get_with_automatic_retry(url=f"{HTTPBIN_URL}/get", params=params)
+
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data["args"]["param1"] == "value1"
+    assert response_data["args"]["param2"] == "value2"
