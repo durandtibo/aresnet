@@ -7,8 +7,15 @@ from unittest.mock import Mock, call
 import httpx
 import pytest
 
-from aresnet import HttpRequestError
+from aresnet import (
+    DEFAULT_BACKOFF_FACTOR,
+    DEFAULT_MAX_RETRIES,
+    RETRY_STATUS_CODES,
+    HttpRequestError,
+)
 from aresnet.request import request_with_automatic_retry
+
+TEST_URL = "https://api.example.com/data"
 
 
 @pytest.fixture
@@ -31,16 +38,13 @@ def test_request_with_automatic_retry_successful_request(
 ) -> None:
     """Test successful request on first attempt."""
     response = request_with_automatic_retry(
-        url="https://api.example.com/data",
+        url=TEST_URL,
         method="GET",
         request_func=mock_request_func,
-        max_retries=3,
-        backoff_factor=0.3,
-        status_forcelist=(500, 503),
     )
 
     assert response == mock_response
-    mock_request_func.assert_called_once_with(url="https://api.example.com/data")
+    mock_request_func.assert_called_once_with(url=TEST_URL)
     mock_sleep.assert_not_called()
 
 
@@ -49,19 +53,19 @@ def test_request_with_automatic_retry_with_kwargs(
 ) -> None:
     """Test that additional kwargs are passed to request function."""
     response = request_with_automatic_retry(
-        url="https://api.example.com/data",
+        url=TEST_URL,
         method="POST",
         request_func=mock_request_func,
-        max_retries=3,
-        backoff_factor=0.3,
-        status_forcelist=(500,),
+        max_retries=DEFAULT_MAX_RETRIES,
+        backoff_factor=DEFAULT_BACKOFF_FACTOR,
+        status_forcelist=RETRY_STATUS_CODES,
         json={"key": "value"},
         headers={"Authorization": "Bearer token"},
     )
 
     assert response == mock_response
     mock_request_func.assert_called_once_with(
-        url="https://api.example.com/data",
+        url=TEST_URL,
         json={"key": "value"},
         headers={"Authorization": "Bearer token"},
     )
@@ -75,7 +79,7 @@ def test_request_with_automatic_retry_retry_on_retryable_status(
     mock_request_func = Mock(side_effect=[mock_fail_response, mock_response])
 
     response = request_with_automatic_retry(
-        url="https://api.example.com/data",
+        url=TEST_URL,
         method="GET",
         request_func=mock_request_func,
         max_retries=3,
@@ -98,7 +102,7 @@ def test_request_with_automatic_retry_multiple_retries_before_success(
     )
 
     response = request_with_automatic_retry(
-        url="https://api.example.com/data",
+        url=TEST_URL,
         method="POST",
         request_func=mock_request_func,
         max_retries=5,
@@ -120,7 +124,7 @@ def test_request_with_automatic_retry_max_retries_exceeded(mock_sleep: Mock) -> 
 
     with pytest.raises(HttpRequestError) as exc_info:
         request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method="GET",
             request_func=mock_request_func,
             max_retries=2,
@@ -146,7 +150,7 @@ def test_request_with_automatic_retry_non_retryable_status_raises_immediately(
 
     with pytest.raises(httpx.HTTPStatusError, match="Not Found"):
         request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method="GET",
             request_func=mock_request_func,
             max_retries=3,
@@ -164,7 +168,7 @@ def test_request_with_automatic_retry_timeout_exception(mock_sleep: Mock) -> Non
 
     with pytest.raises(HttpRequestError, match="timed out") as exc_info:
         request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method="PUT",
             request_func=mock_request_func,
             max_retries=2,
@@ -183,7 +187,7 @@ def test_request_with_automatic_retry_request_error(mock_sleep: Mock) -> None:
 
     with pytest.raises(HttpRequestError, match="failed after") as exc_info:
         request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method="DELETE",
             request_func=mock_request_func,
             max_retries=1,
@@ -203,7 +207,7 @@ def test_request_with_automatic_retry_zero_max_retries(mock_sleep: Mock) -> None
 
     with pytest.raises(HttpRequestError, match="after 1 attempts"):
         request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method="GET",
             request_func=mock_request_func,
             max_retries=0,
@@ -223,7 +227,7 @@ def test_request_with_automatic_retry_zero_backoff_factor(
     mock_request_func = Mock(side_effect=[mock_fail_response, mock_response])
 
     response = request_with_automatic_retry(
-        url="https://api.example.com/data",
+        url=TEST_URL,
         method="GET",
         request_func=mock_request_func,
         max_retries=3,
@@ -244,7 +248,7 @@ def test_request_with_automatic_retry_success_status_2xx(
         mock_request_func = Mock(return_value=mock_response)
 
         response = request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method="GET",
             request_func=mock_request_func,
             max_retries=3,
@@ -267,7 +271,7 @@ def test_request_with_automatic_retry_success_status_3xx(
         mock_request_func = Mock(return_value=mock_response)
 
         response = request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method="GET",
             request_func=mock_request_func,
             max_retries=3,
@@ -288,7 +292,7 @@ def test_request_with_automatic_retry_custom_method_names(
     for method in ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]:
         mock_request_func = Mock(return_value=mock_response)
         request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method=method,
             request_func=mock_request_func,
             max_retries=3,
@@ -312,7 +316,7 @@ def test_request_with_automatic_retry_empty_status_forcelist(
 
     with pytest.raises(httpx.HTTPStatusError, match="Server Error"):
         request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method="GET",
             request_func=mock_request_func,
             max_retries=3,
@@ -333,7 +337,7 @@ def test_request_with_automatic_retry_preserves_response_object(mock_sleep: Mock
 
     with pytest.raises(HttpRequestError) as exc_info:
         request_with_automatic_retry(
-            url="https://api.example.com/data",
+            url=TEST_URL,
             method="GET",
             request_func=mock_request_func,
             max_retries=0,
@@ -353,7 +357,7 @@ def test_request_with_automatic_retry_large_backoff_factor(
     mock_request_func = Mock(side_effect=[mock_fail_response, mock_response])
 
     response = request_with_automatic_retry(
-        url="https://api.example.com/data",
+        url=TEST_URL,
         method="GET",
         request_func=mock_request_func,
         max_retries=2,
@@ -375,7 +379,7 @@ def test_request_with_automatic_retry_high_max_retries(
     mock_request_func = Mock(side_effect=side_effects)
 
     response = request_with_automatic_retry(
-        url="https://api.example.com/data",
+        url=TEST_URL,
         method="GET",
         request_func=mock_request_func,
         max_retries=10,

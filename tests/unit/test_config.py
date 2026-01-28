@@ -2,7 +2,6 @@ r"""Unit tests for configuration constants."""
 
 from __future__ import annotations
 
-
 from aresnet import (
     DEFAULT_BACKOFF_FACTOR,
     DEFAULT_MAX_RETRIES,
