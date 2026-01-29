@@ -12,8 +12,8 @@ from aresnet import (
     DEFAULT_MAX_RETRIES,
     RETRY_STATUS_CODES,
     HttpRequestError,
-    request_with_automatic_retry,
 )
+from aresnet.request import request_with_automatic_retry
 
 TEST_URL = "https://api.example.com/data"
 
