@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 import httpx
 
-from aresnet.exception import HttpRequestError
+from aresnet.exceptions import HttpRequestError
 
 logger: logging.Logger = logging.getLogger(__name__)
 
