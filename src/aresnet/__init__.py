@@ -27,7 +27,7 @@ from aresnet.config import (
     RETRY_STATUS_CODES,
 )
 from aresnet.delete import delete_with_automatic_retry
-from aresnet.exception import HttpRequestError
+from aresnet.exceptions import HttpRequestError
 from aresnet.get import get_with_automatic_retry
 from aresnet.patch import patch_with_automatic_retry
 from aresnet.post import post_with_automatic_retry
