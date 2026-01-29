@@ -17,7 +17,11 @@ def mock_response() -> httpx.Response:
 
 @pytest.fixture
 def mock_client(mock_response: httpx.Response) -> httpx.AsyncClient:
-    return Mock(spec=httpx.AsyncClient, post=AsyncMock(return_value=mock_response))
+    return Mock(
+        spec=httpx.AsyncClient,
+        post=AsyncMock(return_value=mock_response),
+        aclose=AsyncMock(),
+    )
 
 
 ####################################################
@@ -42,7 +46,7 @@ async def test_post_with_automatic_retry_async_successful_post_request_with_defa
     mock_response: httpx.Response, mock_asleep: Mock
 ) -> None:
     """Test successful POST request on first attempt."""
-    with patch("httpx.AsyncClient.post", return_value=mock_response):
+    with patch("httpx.AsyncClient.post", new_callable=AsyncMock, return_value=mock_response):
         response = await post_with_automatic_retry_async(TEST_URL)
 
     assert response.status_code == 200
@@ -85,8 +89,7 @@ async def test_post_with_automatic_retry_async_retry_on_503_status(
     mock_response_fail = Mock(spec=httpx.Response, status_code=503)
     mock_client.post.side_effect = [mock_response_fail, mock_response]
 
-    with patch("httpx.AsyncClient.post", side_effect=[mock_response_fail, mock_response]):
-        response = await post_with_automatic_retry_async(TEST_URL, client=mock_client)
+    response = await post_with_automatic_retry_async(TEST_URL, client=mock_client)
 
     assert response.status_code == 200
     mock_asleep.assert_called_once_with(0.3)
@@ -260,7 +263,7 @@ async def test_post_with_automatic_retry_async_default_retry_status_codes(
     mock_asleep: Mock,
     status_code: int,
 ) -> None:
-    """Test custom status codes for retry."""
+    """Test that default retry status codes trigger retries."""
     mock_response_fail = Mock(spec=httpx.Response, status_code=status_code)
     mock_client.post.side_effect = [mock_response_fail, mock_response]
 
