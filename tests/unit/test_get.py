@@ -78,8 +78,7 @@ def test_get_with_automatic_retry_retry_on_503_status(
     mock_response_fail = Mock(spec=httpx.Response, status_code=503)
     mock_client.get.side_effect = [mock_response_fail, mock_response]
 
-    with patch("httpx.Client.get", side_effect=[mock_response_fail, mock_response]):
-        response = get_with_automatic_retry(TEST_URL, client=mock_client)
+    response = get_with_automatic_retry(TEST_URL, client=mock_client)
 
     assert response.status_code == 200
     mock_sleep.assert_called_once_with(0.3)
