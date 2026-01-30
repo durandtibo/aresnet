@@ -65,14 +65,14 @@ class HttpRequestError(RuntimeError):
         message: str,
         status_code: int | None = None,
         response: httpx.Response | None = None,
-        cause: Exception | None = None,
+        cause: BaseException | None = None,
     ) -> None:
         super().__init__(message)
         self.method = method
         self.url = url
         self.status_code = status_code
         self.response = response
-        self.__cause__: Exception | None = cause
+        self.__cause__: BaseException | None = cause
 
     def __repr__(self) -> str:
         return (

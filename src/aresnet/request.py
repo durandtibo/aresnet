@@ -146,6 +146,17 @@ def request_with_automatic_retry(
             time.sleep(sleep_time)
 
     # All retries exhausted with retryable status code - raise final error
+    # Note: response cannot be None here because if all attempts raised exceptions,
+    # they would have been caught by the exception handlers above and raised before
+    # reaching this point.
+    if response is None:  # pragma: no cover
+        # This should never happen in practice, but we check for type safety
+        msg = f"{method} request to {url} failed after {max_retries + 1} attempts"
+        raise HttpRequestError(
+            method=method,
+            url=url,
+            message=msg,
+        )
     raise HttpRequestError(
         method=method,
         url=url,
