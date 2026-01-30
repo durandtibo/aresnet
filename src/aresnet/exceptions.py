@@ -72,7 +72,7 @@ class HttpRequestError(RuntimeError):
         self.url = url
         self.status_code = status_code
         self.response = response
-        self.__cause__: Exception | None = cause
+        self.__cause__: BaseException | None = cause
 
     def __repr__(self) -> str:
         return (
