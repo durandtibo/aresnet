@@ -6,6 +6,7 @@ from __future__ import annotations
 __all__ = ["request_with_automatic_retry"]
 
 import logging
+import random
 import time
 from typing import TYPE_CHECKING, Any
 
@@ -14,6 +15,7 @@ from aresnet.config import (
     DEFAULT_MAX_RETRIES,
     RETRY_STATUS_CODES,
 )
+from aresnet.utils import parse_retry_after
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -33,6 +35,7 @@ def request_with_automatic_retry(
     max_retries: int = DEFAULT_MAX_RETRIES,
     backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
     status_forcelist: tuple[int, ...] = RETRY_STATUS_CODES,
+    jitter_factor: float = 0.0,
     **kwargs: Any,
 ) -> httpx.Response:
     """Perform an HTTP request with automatic retry logic.
@@ -46,8 +49,11 @@ def request_with_automatic_retry(
     2. Timeout exceptions (httpx.TimeoutException)
     3. General network errors (httpx.RequestError)
 
-    Exponential backoff wait time: backoff_factor * (2 ** attempt)
-    where attempt is 0-indexed (0, 1, 2, ...).
+    Backoff Strategy:
+    - Exponential backoff: backoff_factor * (2 ** attempt)
+    - Jitter: Optional randomization added to prevent thundering herd
+    - Retry-After header: If present in the response (429/503), the server's
+      suggested wait time is used instead of exponential backoff
 
     Args:
         url: The URL to send the request to.
@@ -60,6 +66,10 @@ def request_with_automatic_retry(
             time is calculated as: {backoff_factor} * (2 ** attempt) seconds,
             where attempt is 0-indexed (0, 1, 2, ...).
         status_forcelist: Tuple of HTTP status codes that should trigger a retry.
+        jitter_factor: Factor for adding random jitter to backoff delays. The jitter
+            is calculated as: random.uniform(0, jitter_factor) * base_sleep_time.
+            Set to 0 to disable jitter (default). Recommended value is 0.1 for 10%
+            jitter to prevent thundering herd issues.
         **kwargs: Additional keyword arguments passed to the request function.
 
     Returns:
@@ -80,6 +90,7 @@ def request_with_automatic_retry(
         ...         request_func=client.get,
         ...         max_retries=5,
         ...         backoff_factor=1.0,
+        ...         jitter_factor=0.1,  # Add 10% jitter
         ...     )  # doctest: +SKIP
         ...
 
@@ -133,8 +144,10 @@ def request_with_automatic_retry(
 
         except httpx.RequestError as exc:
             # Network error (connection failed, DNS failure, etc.) - retry if attempts remain
+            error_type = type(exc).__name__
             logger.debug(
-                f"{method} request to {url} encountered network error on attempt {attempt + 1}/{max_retries + 1}: {exc}"
+                f"{method} request to {url} encountered {error_type} on attempt "
+                f"{attempt + 1}/{max_retries + 1}: {exc}"
             )
             if attempt == max_retries:
                 raise HttpRequestError(
@@ -144,11 +157,31 @@ def request_with_automatic_retry(
                     cause=exc,
                 ) from exc
 
-        # Exponential backoff before next retry (skip on last attempt since we're about to fail)
+        # Exponential backoff with jitter before next retry (skip on last attempt since we're about to fail)
         if attempt < max_retries:
-            sleep_time = backoff_factor * (2**attempt)
-            logger.debug(f"Waiting {sleep_time:.2f}s before retry")
-            time.sleep(sleep_time)
+            # Check for Retry-After header in the response (if available)
+            retry_after_sleep: float | None = None
+            if response is not None and hasattr(response, "headers"):
+                retry_after_header = response.headers.get("Retry-After")
+                retry_after_sleep = parse_retry_after(retry_after_header)
+
+            # Use Retry-After if available, otherwise use exponential backoff
+            if retry_after_sleep is not None:
+                sleep_time = retry_after_sleep
+                logger.debug(f"Using Retry-After header value: {sleep_time:.2f}s")
+            else:
+                sleep_time = backoff_factor * (2**attempt)
+
+            # Add jitter if jitter_factor is configured
+            if jitter_factor > 0:
+                jitter = random.uniform(0, jitter_factor) * sleep_time
+                total_sleep_time = sleep_time + jitter
+                logger.debug(f"Waiting {total_sleep_time:.2f}s before retry (base={sleep_time:.2f}s, jitter={jitter:.2f}s)")
+            else:
+                total_sleep_time = sleep_time
+                logger.debug(f"Waiting {total_sleep_time:.2f}s before retry")
+            
+            time.sleep(total_sleep_time)
 
     # All retries exhausted with retryable status code - raise final error
     # Note: response cannot be None here because if all attempts raised exceptions,
