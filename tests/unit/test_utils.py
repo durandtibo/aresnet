@@ -49,6 +49,19 @@ def test_validate_retry_params_rejects_both_negative() -> None:
         validate_retry_params(-1, -0.5)
 
 
+def test_validate_retry_params_accepts_valid_jitter_factor() -> None:
+    """Test that validate_retry_params accepts valid jitter_factor."""
+    validate_retry_params(max_retries=3, backoff_factor=0.5, jitter_factor=0.1)
+    validate_retry_params(max_retries=3, backoff_factor=0.5, jitter_factor=0.0)
+    validate_retry_params(max_retries=3, backoff_factor=0.5, jitter_factor=1.0)
+
+
+def test_validate_retry_params_rejects_negative_jitter_factor() -> None:
+    """Test that validate_retry_params rejects negative jitter_factor."""
+    with pytest.raises(ValueError, match=r"jitter_factor must be >= 0, got -0.1"):
+        validate_retry_params(3, 0.5, -0.1)
+
+
 ##########################################
 #     Tests for calculate_sleep_time     #
 ##########################################

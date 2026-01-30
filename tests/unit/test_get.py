@@ -205,6 +205,24 @@ def test_get_with_automatic_retry_negative_backoff_factor() -> None:
         get_with_automatic_retry(TEST_URL, backoff_factor=-1.0)
 
 
+def test_get_with_automatic_retry_negative_jitter_factor() -> None:
+    """Test that negative jitter_factor raises ValueError."""
+    with pytest.raises(ValueError, match=r"jitter_factor must be >= 0"):
+        get_with_automatic_retry(TEST_URL, jitter_factor=-0.1)
+
+
+def test_get_with_automatic_retry_negative_timeout() -> None:
+    """Test that negative timeout raises ValueError."""
+    with pytest.raises(ValueError, match=r"timeout must be > 0"):
+        get_with_automatic_retry(TEST_URL, timeout=-1.0)
+
+
+def test_get_with_automatic_retry_zero_timeout() -> None:
+    """Test that zero timeout raises ValueError."""
+    with pytest.raises(ValueError, match=r"timeout must be > 0"):
+        get_with_automatic_retry(TEST_URL, timeout=0.0)
+
+
 def test_get_with_automatic_retry_zero_max_retries(
     mock_client: httpx.Client, mock_sleep: Mock
 ) -> None:
