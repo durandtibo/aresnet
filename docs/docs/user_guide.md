@@ -308,6 +308,25 @@ response = get_with_automatic_retry(
 )
 ```
 
+### Retry-After Header Support
+
+When a server returns a `Retry-After` header (commonly with 429 or 503 status codes), `aresnet`
+automatically uses the server's suggested wait time instead of exponential backoff. This ensures
+compliance with rate limiting and helps avoid overwhelming the server.
+
+The `Retry-After` header supports two formats:
+
+```python
+# Server responds with: Retry-After: 120
+# aresnet will wait 120 seconds before retrying
+
+# Server responds with: Retry-After: Wed, 21 Oct 2015 07:28:00 GMT
+# aresnet will wait until this time before retrying
+```
+
+The retry delay from the `Retry-After` header is used automatically - you don't need to configure
+anything. This works with all HTTP methods (GET, POST, PUT, DELETE, PATCH).
+
 ## Advanced Usage
 
 ### Using a Custom httpx Client
@@ -572,6 +591,48 @@ def custom_api_call():
         )
         return response.json()
 ```
+
+### Advanced: Using Jitter with Low-Level Functions
+
+The low-level `request_with_automatic_retry` and `request_with_automatic_retry_async` functions
+support an optional `jitter_factor` parameter to add randomized jitter to backoff delays. This
+helps prevent the "thundering herd" problem where multiple clients retry simultaneously.
+
+```python
+import httpx
+from aresnet import request_with_automatic_retry
+
+with httpx.Client() as client:
+    response = request_with_automatic_retry(
+        url="https://api.example.com/data",
+        method="GET",
+        request_func=client.get,
+        max_retries=5,
+        backoff_factor=1.0,
+        jitter_factor=0.1,  # Add 10% random jitter to backoff delays
+    )
+```
+
+With `jitter_factor=0.1`, the wait time calculation becomes:
+
+```
+base_wait_time = backoff_factor * (2 ** retry_number)
+jitter = random(0, 0.1) * base_wait_time
+total_wait_time = base_wait_time + jitter
+```
+
+For example, with `backoff_factor=1.0` and `jitter_factor=0.1`:
+- 1st retry: 1.0-1.1 seconds (base 1.0s + up to 10% jitter)
+- 2nd retry: 2.0-2.2 seconds (base 2.0s + up to 10% jitter)
+- 3rd retry: 4.0-4.4 seconds (base 4.0s + up to 10% jitter)
+
+**Important Notes:**
+- Jitter is only available in the low-level `request_with_automatic_retry` and
+  `request_with_automatic_retry_async` functions
+- Jitter is applied to both exponential backoff and `Retry-After` header values
+- A `jitter_factor` of 0.1 (10% jitter) is recommended for production use to prevent thundering
+  herd issues
+- Set `jitter_factor=0` (default) to disable jitter
 
 ## Best Practices
 
