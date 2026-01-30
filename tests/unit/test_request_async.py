@@ -75,12 +75,11 @@ async def test_request_with_automatic_retry_async_non_retryable_status_code_rais
     """Test that non-retryable status codes (e.g., 404) raise without
     retries."""
     mock_response = Mock(spec=httpx.Response, status_code=404)
-    mock_response.raise_for_status.side_effect = httpx.HTTPStatusError(
-        "Not Found", request=Mock(), response=mock_response
-    )
     mock_request_func = AsyncMock(return_value=mock_response)
 
-    with pytest.raises(httpx.HTTPStatusError, match=r"Not Found"):
+    with pytest.raises(
+        HttpRequestError, match=r"GET request to https://example\.com failed with status 404"
+    ):
         await request_with_automatic_retry_async(
             url="https://example.com",
             method="GET",

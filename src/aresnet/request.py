@@ -104,8 +104,13 @@ def request_with_automatic_retry(
                 logger.debug(
                     f"{method} request to {url} failed with non-retryable status {response.status_code}"
                 )
-                # Let httpx raise the appropriate HTTPStatusError
-                response.raise_for_status()
+                raise HttpRequestError(
+                    method=method,
+                    url=url,
+                    message=f"{method} request to {url} failed with status {response.status_code}",
+                    status_code=response.status_code,
+                    response=response,
+                )
 
             # Retryable HTTP status - log and continue to retry
             logger.debug(

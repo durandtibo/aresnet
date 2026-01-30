@@ -3,6 +3,7 @@ from __future__ import annotations
 import httpx
 import pytest
 
+from aresnet import HttpRequestError
 from aresnet.request import request_with_automatic_retry
 
 # Use httpbin.org for real HTTP testing
@@ -28,7 +29,10 @@ def test_request_with_automatic_retry_successful_request() -> None:
 def test_get_with_non_retryable_status_fails_immediately() -> None:
     """Test that 404 (non-retryable) fails immediately without
     retries."""
-    with httpx.Client() as client, pytest.raises(httpx.HTTPStatusError):
+    with (
+        httpx.Client() as client,
+        pytest.raises(HttpRequestError, match=r"GET request to .* failed with status 404"),
+    ):
         request_with_automatic_retry(
             url=f"{HTTPBIN_URL}/status/404", method="GET", request_func=client.get
         )

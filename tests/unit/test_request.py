@@ -152,12 +152,12 @@ def test_request_with_automatic_retry_non_retryable_status_raises_immediately(
     immediately. This test uses all default parameter values.
     """
     mock_fail_response = Mock(spec=httpx.Response, status_code=404)
-    mock_fail_response.raise_for_status.side_effect = httpx.HTTPStatusError(
-        "Not Found", request=Mock(), response=mock_fail_response
-    )
     mock_request_func = Mock(return_value=mock_fail_response)
 
-    with pytest.raises(httpx.HTTPStatusError, match=r"Not Found"):
+    with pytest.raises(
+        HttpRequestError,
+        match=r"GET request to https://api\.example\.com/data failed with status 404",
+    ):
         request_with_automatic_retry(
             url=TEST_URL,
             method="GET",
@@ -359,12 +359,12 @@ def test_request_with_automatic_retry_empty_status_forcelist(
 ) -> None:
     """Test with empty status_forcelist - no status codes should trigger retry."""
     mock_fail_response = Mock(spec=httpx.Response, status_code=500)
-    mock_fail_response.raise_for_status.side_effect = httpx.HTTPStatusError(
-        "Server Error", request=Mock(), response=mock_fail_response
-    )
     mock_request_func = Mock(return_value=mock_fail_response)
 
-    with pytest.raises(httpx.HTTPStatusError, match=r"Server Error"):
+    with pytest.raises(
+        HttpRequestError,
+        match=r"GET request to https://api\.example\.com/data failed with status 500",
+    ):
         request_with_automatic_retry(
             url=TEST_URL,
             method="GET",
