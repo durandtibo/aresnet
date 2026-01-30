@@ -77,7 +77,9 @@ async def test_request_with_automatic_retry_async_non_retryable_status_code_rais
     mock_response = Mock(spec=httpx.Response, status_code=404)
     mock_request_func = AsyncMock(return_value=mock_response)
 
-    with pytest.raises(HttpRequestError, match=r"failed with status 404"):
+    with pytest.raises(
+        HttpRequestError, match=r"GET request to https://example\.com failed with status 404"
+    ):
         await request_with_automatic_retry_async(
             url="https://example.com",
             method="GET",

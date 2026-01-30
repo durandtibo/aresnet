@@ -126,7 +126,10 @@ async def test_delete_with_automatic_retry_async_non_retryable_status_code(
     mock_response = Mock(spec=httpx.Response, status_code=404)
     mock_client.delete.return_value = mock_response
 
-    with pytest.raises(HttpRequestError, match=r"failed with status 404"):
+    with pytest.raises(
+        HttpRequestError,
+        match=r"DELETE request to https://api\.example\.com/resource/123 failed with status 404",
+    ):
         await delete_with_automatic_retry_async(TEST_URL, client=mock_client)
 
     mock_asleep.assert_not_called()
@@ -517,7 +520,10 @@ async def test_delete_with_automatic_retry_async_client_errors_not_retried(
     mock_response = Mock(spec=httpx.Response, status_code=status_code)
     mock_client.delete.return_value = mock_response
 
-    with pytest.raises(HttpRequestError, match=f"failed with status {status_code}"):
+    with pytest.raises(
+        HttpRequestError,
+        match=f"DELETE request to https://api\\.example\\.com/resource/123 failed with status {status_code}",
+    ):
         await delete_with_automatic_retry_async(TEST_URL, client=mock_client, max_retries=3)
 
     # Should not retry

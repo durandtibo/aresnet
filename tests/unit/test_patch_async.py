@@ -124,7 +124,10 @@ async def test_patch_with_automatic_retry_async_non_retryable_status_code(
     mock_response = Mock(spec=httpx.Response, status_code=404)
     mock_client.patch.return_value = mock_response
 
-    with pytest.raises(HttpRequestError, match=r"failed with status 404"):
+    with pytest.raises(
+        HttpRequestError,
+        match=r"PATCH request to https://api\.example\.com/resource/123 failed with status 404",
+    ):
         await patch_with_automatic_retry_async(TEST_URL, client=mock_client)
 
     mock_asleep.assert_not_called()

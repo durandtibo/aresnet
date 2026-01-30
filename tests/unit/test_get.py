@@ -107,7 +107,9 @@ def test_get_with_automatic_retry_non_retryable_status_code(
     mock_response = Mock(spec=httpx.Response, status_code=404)
     mock_client.get.return_value = mock_response
 
-    with pytest.raises(HttpRequestError, match=r"failed with status 404"):
+    with pytest.raises(
+        HttpRequestError, match=r"GET request to https://api\.example\.com/data failed with status 404"
+    ):
         get_with_automatic_retry(TEST_URL, client=mock_client)
 
     mock_sleep.assert_not_called()
