@@ -46,7 +46,7 @@ def _make_http_request(
     status_forcelist: tuple[int, ...] = RETRY_STATUS_CODES,
     **kwargs: Any,
 ) -> httpx.Response:
-    r"""Generic synchronous HTTP request with automatic retry logic.
+    r"""Make a generic synchronous HTTP request with automatic retry logic.
 
     This is an internal helper function that implements the core retry logic
     for all HTTP methods. It validates parameters, manages the client lifecycle,
@@ -106,7 +106,7 @@ async def _make_http_request_async(
     status_forcelist: tuple[int, ...] = RETRY_STATUS_CODES,
     **kwargs: Any,
 ) -> httpx.Response:
-    r"""Generic asynchronous HTTP request with automatic retry logic.
+    r"""Make a generic asynchronous HTTP request with automatic retry logic.
 
     This is an internal helper function that implements the core retry logic
     for all async HTTP methods. It validates parameters, manages the async client
