@@ -55,21 +55,6 @@ class HttpRequestError(RuntimeError):
         ... )  # doctest: +SKIP
 
         ```
-
-        Catching and handling HTTP request errors:
-
-        ```pycon
-        >>> from aresnet import get_with_automatic_retry, HttpRequestError
-        >>> try:
-        ...     response = get_with_automatic_retry("https://api.example.com/data")
-        ... except HttpRequestError as e:
-        ...     print(f"Request failed: {e}")
-        ...     print(f"Method: {e.method}")
-        ...     print(f"URL: {e.url}")
-        ...     print(f"Status Code: {e.status_code}")
-        ...  # doctest: +SKIP
-
-        ```
     """
 
     def __init__(
