@@ -2,7 +2,7 @@ r"""Contain utility functions for HTTP requests."""
 
 from __future__ import annotations
 
-__all__ = ["validate_retry_params", "parse_retry_after"]
+__all__ = ["parse_retry_after", "validate_retry_params"]
 
 import logging
 from datetime import datetime, timezone

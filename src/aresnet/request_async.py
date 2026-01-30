@@ -180,11 +180,13 @@ async def request_with_automatic_retry_async(
             if jitter_factor > 0:
                 jitter = random.uniform(0, jitter_factor) * sleep_time
                 total_sleep_time = sleep_time + jitter
-                logger.debug(f"Waiting {total_sleep_time:.2f}s before retry (base={sleep_time:.2f}s, jitter={jitter:.2f}s)")
+                logger.debug(
+                    f"Waiting {total_sleep_time:.2f}s before retry (base={sleep_time:.2f}s, jitter={jitter:.2f}s)"
+                )
             else:
                 total_sleep_time = sleep_time
                 logger.debug(f"Waiting {total_sleep_time:.2f}s before retry")
-            
+
             await asyncio.sleep(total_sleep_time)
 
     # All retries exhausted with retryable status code - raise final error
