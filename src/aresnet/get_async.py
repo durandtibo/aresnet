@@ -26,6 +26,7 @@ async def get_with_automatic_retry_async(
     max_retries: int = DEFAULT_MAX_RETRIES,
     backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
     status_forcelist: tuple[int, ...] = RETRY_STATUS_CODES,
+    jitter_factor: float = 0.0,
     **kwargs: Any,
 ) -> httpx.Response:
     r"""Send an HTTP GET request asynchronously with automatic retry
@@ -48,6 +49,10 @@ async def get_with_automatic_retry_async(
             time is calculated as: {backoff_factor} * (2 ** retry_number) seconds.
             Must be >= 0.
         status_forcelist: Tuple of HTTP status codes that should trigger a retry.
+        jitter_factor: Factor for adding random jitter to backoff delays. The jitter
+            is calculated as: random.uniform(0, jitter_factor) * base_sleep_time.
+            Set to 0 to disable jitter (default). Recommended value is 0.1 for 10%
+            jitter to prevent thundering herd issues.
         **kwargs: Additional keyword arguments passed to ``httpx.AsyncClient.get()``.
 
     Returns:
@@ -83,6 +88,7 @@ async def get_with_automatic_retry_async(
             max_retries=max_retries,
             backoff_factor=backoff_factor,
             status_forcelist=status_forcelist,
+            jitter_factor=jitter_factor,
             **kwargs,
         )
     finally:
