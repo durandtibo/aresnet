@@ -150,6 +150,9 @@ async def request_with_automatic_retry_async(
             await asyncio.sleep(sleep_time)
 
     # All retries exhausted with retryable status code - raise final error
+    # Note: response should never be None here as this code path is only reached
+    # when all attempts return retryable status codes. The assertion is for type safety.
+    assert response is not None, "response should not be None after retry loop"
     raise HttpRequestError(
         method=method,
         url=url,
