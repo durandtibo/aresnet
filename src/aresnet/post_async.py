@@ -16,7 +16,7 @@ from aresnet.config import (
     RETRY_STATUS_CODES,
 )
 from aresnet.request_async import request_with_automatic_retry_async
-from aresnet.utils import validate_retry_params
+from aresnet.utils import http_method_with_retry_wrapper_async
 
 
 async def post_with_automatic_retry_async(
@@ -73,21 +73,15 @@ async def post_with_automatic_retry_async(
 
         ```
     """
-    # Input validation
-    validate_retry_params(max_retries, backoff_factor)
-
-    owns_client = client is None
-    client = client or httpx.AsyncClient(timeout=timeout)
-    try:
-        return await request_with_automatic_retry_async(
-            url=url,
-            method="POST",
-            request_func=client.post,
-            max_retries=max_retries,
-            backoff_factor=backoff_factor,
-            status_forcelist=status_forcelist,
-            **kwargs,
-        )
-    finally:
-        if owns_client:
-            await client.aclose()
+    return await http_method_with_retry_wrapper_async(
+        url=url,
+        method="POST",
+        client_method_name="post",
+        request_with_retry=request_with_automatic_retry_async,
+        client=client,
+        timeout=timeout,
+        max_retries=max_retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=status_forcelist,
+        **kwargs,
+    )
