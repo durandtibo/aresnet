@@ -155,7 +155,8 @@ def test_request_with_automatic_retry_non_retryable_status_raises_immediately(
     mock_request_func = Mock(return_value=mock_fail_response)
 
     with pytest.raises(
-        HttpRequestError, match=r"GET request to https://api\.example\.com/data failed with status 404"
+        HttpRequestError,
+        match=r"GET request to https://api\.example\.com/data failed with status 404",
     ):
         request_with_automatic_retry(
             url=TEST_URL,
@@ -361,7 +362,8 @@ def test_request_with_automatic_retry_empty_status_forcelist(
     mock_request_func = Mock(return_value=mock_fail_response)
 
     with pytest.raises(
-        HttpRequestError, match=r"GET request to https://api\.example\.com/data failed with status 500"
+        HttpRequestError,
+        match=r"GET request to https://api\.example\.com/data failed with status 500",
     ):
         request_with_automatic_retry(
             url=TEST_URL,

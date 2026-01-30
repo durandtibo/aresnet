@@ -109,7 +109,8 @@ def test_post_with_automatic_retry_non_retryable_status_code(
     mock_client.post.return_value = mock_response
 
     with pytest.raises(
-        HttpRequestError, match=r"POST request to https://api\.example\.com/data failed with status 404"
+        HttpRequestError,
+        match=r"POST request to https://api\.example\.com/data failed with status 404",
     ):
         post_with_automatic_retry(TEST_URL, client=mock_client)
 

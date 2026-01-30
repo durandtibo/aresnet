@@ -108,7 +108,8 @@ def test_put_with_automatic_retry_non_retryable_status_code(
     mock_client.put.return_value = mock_response
 
     with pytest.raises(
-        HttpRequestError, match=r"PUT request to https://api\.example\.com/resource failed with status 404"
+        HttpRequestError,
+        match=r"PUT request to https://api\.example\.com/resource failed with status 404",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client)
 

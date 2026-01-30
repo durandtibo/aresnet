@@ -3,7 +3,7 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from aresnet import patch_with_automatic_retry
+from aresnet import HttpRequestError, patch_with_automatic_retry
 
 # Use httpbin.org for real HTTP testing
 HTTPBIN_URL = "https://httpbin.org"
@@ -41,7 +41,7 @@ def test_patch_with_non_retryable_status_fails_immediately() -> None:
     retries."""
     with (
         httpx.Client() as client,
-        pytest.raises(httpx.HTTPStatusError, match=r"Client error '404 NOT FOUND'"),
+        pytest.raises(HttpRequestError, match=r"PATCH request to .* failed with status 404"),
     ):
         patch_with_automatic_retry(url=f"{HTTPBIN_URL}/status/404", client=client)
 
