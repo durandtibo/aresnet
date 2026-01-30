@@ -358,4 +358,4 @@ This minimal-change approach maintains stability for users while preserving all 
 ---
 
 **Last Updated**: January 2026
-**Next Review**: When library reaches 2,000 lines or 18 files
+**Next Review**: When library reaches 2,000 lines or 18 files (before restructuring threshold)
