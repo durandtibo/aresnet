@@ -8,8 +8,6 @@ __all__ = ["request_with_automatic_retry_async"]
 import asyncio
 import logging
 import random
-from datetime import datetime, timezone
-from email.utils import parsedate_to_datetime
 from typing import TYPE_CHECKING, Any
 
 from aresnet.config import (
@@ -17,6 +15,7 @@ from aresnet.config import (
     DEFAULT_MAX_RETRIES,
     RETRY_STATUS_CODES,
 )
+from aresnet.utils import parse_retry_after
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Awaitable
@@ -28,49 +27,6 @@ from aresnet.exceptions import HttpRequestError
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-def _parse_retry_after(retry_after_header: str | None) -> float | None:
-    """Parse the Retry-After header value.
-
-    The Retry-After header can be either:
-    1. A number of seconds (integer)
-    2. An HTTP-date (RFC 5322 format)
-
-    Args:
-        retry_after_header: The value of the Retry-After header.
-
-    Returns:
-        The number of seconds to wait, or None if the header is invalid.
-
-    Example:
-        ```pycon
-        >>> _parse_retry_after("120")
-        120.0
-        >>> _parse_retry_after("Wed, 21 Oct 2015 07:28:00 GMT")  # doctest: +SKIP
-        ...
-
-        ```
-    """
-    if retry_after_header is None:
-        return None
-
-    # Try parsing as an integer (seconds)
-    try:
-        return float(retry_after_header)
-    except ValueError:
-        pass
-
-    # Try parsing as HTTP-date
-    try:
-        retry_date: datetime = parsedate_to_datetime(retry_after_header)
-        now = datetime.now(timezone.utc)
-        delta_seconds = (retry_date - now).total_seconds()
-        # Ensure we don't return negative values
-        return max(0.0, delta_seconds)
-    except (ValueError, TypeError, OverflowError):
-        logger.debug(f"Failed to parse Retry-After header: {retry_after_header}")
-        return None
-
-
 async def request_with_automatic_retry_async(
     url: str,
     method: str,
@@ -79,6 +35,7 @@ async def request_with_automatic_retry_async(
     max_retries: int = DEFAULT_MAX_RETRIES,
     backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
     status_forcelist: tuple[int, ...] = RETRY_STATUS_CODES,
+    jitter_factor: float = 0.0,
     **kwargs: Any,
 ) -> httpx.Response:
     """Perform an async HTTP request with automatic retry logic.
@@ -94,7 +51,7 @@ async def request_with_automatic_retry_async(
 
     Backoff Strategy:
     - Exponential backoff: backoff_factor * (2 ** attempt)
-    - Jitter: Up to 10% randomization added to prevent thundering herd
+    - Jitter: Optional randomization added to prevent thundering herd
     - Retry-After header: If present in the response (429/503), the server's
       suggested wait time is used instead of exponential backoff
 
@@ -107,10 +64,12 @@ async def request_with_automatic_retry_async(
             Must be >= 0.
         backoff_factor: Factor for exponential backoff between retries. The wait
             time is calculated as: {backoff_factor} * (2 ** attempt) seconds,
-            where attempt is 0-indexed (0, 1, 2, ...). Jitter of up to 10% is
-            added to this base value to prevent synchronized retries across
-            multiple clients.
+            where attempt is 0-indexed (0, 1, 2, ...).
         status_forcelist: Tuple of HTTP status codes that should trigger a retry.
+        jitter_factor: Factor for adding random jitter to backoff delays. The jitter
+            is calculated as: random.uniform(0, jitter_factor) * base_sleep_time.
+            Set to 0 to disable jitter (default). Recommended value is 0.1 for 10%
+            jitter to prevent thundering herd issues.
         **kwargs: Additional keyword arguments passed to the request function.
 
     Returns:
@@ -133,6 +92,7 @@ async def request_with_automatic_retry_async(
         ...             request_func=client.get,
         ...             max_retries=5,
         ...             backoff_factor=1.0,
+        ...             jitter_factor=0.1,  # Add 10% jitter
         ...         )
         ...         return response.status_code
         ...
@@ -207,7 +167,7 @@ async def request_with_automatic_retry_async(
             retry_after_sleep: float | None = None
             if response is not None and hasattr(response, "headers"):
                 retry_after_header = response.headers.get("Retry-After")
-                retry_after_sleep = _parse_retry_after(retry_after_header)
+                retry_after_sleep = parse_retry_after(retry_after_header)
 
             # Use Retry-After if available, otherwise use exponential backoff
             if retry_after_sleep is not None:
@@ -216,11 +176,15 @@ async def request_with_automatic_retry_async(
             else:
                 sleep_time = backoff_factor * (2**attempt)
 
-            # Add jitter to prevent thundering herd problem
-            # Jitter is up to 10% of the sleep time
-            jitter = random.uniform(0, 0.1) * sleep_time
-            total_sleep_time = sleep_time + jitter
-            logger.debug(f"Waiting {total_sleep_time:.2f}s before retry (base={sleep_time:.2f}s, jitter={jitter:.2f}s)")
+            # Add jitter if jitter_factor is configured
+            if jitter_factor > 0:
+                jitter = random.uniform(0, jitter_factor) * sleep_time
+                total_sleep_time = sleep_time + jitter
+                logger.debug(f"Waiting {total_sleep_time:.2f}s before retry (base={sleep_time:.2f}s, jitter={jitter:.2f}s)")
+            else:
+                total_sleep_time = sleep_time
+                logger.debug(f"Waiting {total_sleep_time:.2f}s before retry")
+            
             await asyncio.sleep(total_sleep_time)
 
     # All retries exhausted with retryable status code - raise final error

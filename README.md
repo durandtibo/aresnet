@@ -64,14 +64,14 @@ HTTP communications, making your applications more robust and fault-tolerant.
 
 - **Automatic Retry Logic**: Automatically retries failed requests for configurable HTTP status
   codes (429, 500, 502, 503, 504 by default)
-- **Exponential Backoff with Jitter**: Implements exponential backoff strategy with randomized
-  jitter (up to 10%) to prevent thundering herd problems and avoid overwhelming servers
+- **Exponential Backoff with Optional Jitter**: Implements exponential backoff strategy with
+  optional randomized jitter to prevent thundering herd problems and avoid overwhelming servers
 - **Retry-After Header Support**: Respects server-specified retry delays from `Retry-After` headers
   (supports both integer seconds and HTTP-date formats)
 - **Complete HTTP Method Support**: Supports all common HTTP methods (GET, POST, PUT, DELETE, PATCH)
 - **Async Support**: Fully supports asynchronous requests for high-performance applications
 - **Built on httpx**: Leverages the modern, async-capable httpx library
-- **Configurable**: Customize timeout, retry attempts, backoff factors, and retryable status codes
+- **Configurable**: Customize timeout, retry attempts, backoff factors, jitter, and retryable status codes
 - **Enhanced Error Handling**: Detailed logging of specific error types (ConnectError, PoolTimeout, etc.)
 - **Type-Safe**: Fully typed with comprehensive type hints
 - **Well-Tested**: Extensive test coverage ensuring reliability
@@ -122,6 +122,7 @@ response = get_with_automatic_retry(
     "https://api.example.com/data",
     max_retries=5,  # Retry up to 5 times
     backoff_factor=1.0,  # Exponential backoff factor
+    jitter_factor=0.1,  # Add 10% jitter to prevent thundering herd
     timeout=30.0,  # 30 second timeout
     status_forcelist=(429, 503),  # Only retry on these status codes
 )
@@ -236,18 +237,20 @@ The wait time between retries is calculated as:
 
 ```
 base_wait_time = backoff_factor * (2 ** retry_number)
-jitter = random(0, 0.1) * base_wait_time
+# If jitter_factor is set (e.g., 0.1 for 10% jitter):
+jitter = random(0, jitter_factor) * base_wait_time
 total_wait_time = base_wait_time + jitter
 ```
 
-For example, with `backoff_factor=0.3`:
+For example, with `backoff_factor=0.3` and `jitter_factor=0.1`:
 
 - 1st retry: 0.3-0.33 seconds (base 0.3s + up to 10% jitter)
 - 2nd retry: 0.6-0.66 seconds (base 0.6s + up to 10% jitter)
 - 3rd retry: 1.2-1.32 seconds (base 1.2s + up to 10% jitter)
 
-**Note**: Jitter is randomized for each retry to prevent multiple clients from retrying
-simultaneously (thundering herd problem).
+**Note**: Jitter is optional (disabled by default with `jitter_factor=0`). When enabled, it's
+randomized for each retry to prevent multiple clients from retrying simultaneously (thundering
+herd problem). Set `jitter_factor=0.1` for 10% jitter, which is recommended for production use.
 
 ### Retry-After Header Support
 
@@ -259,8 +262,9 @@ The `Retry-After` header supports two formats:
 - **Integer seconds**: `Retry-After: 120` (wait 120 seconds)
 - **HTTP-date**: `Retry-After: Wed, 21 Oct 2015 07:28:00 GMT` (wait until this time)
 
-**Note**: Jitter (up to 10%) is still applied to server-specified `Retry-After` values to prevent
-thundering herd issues when many clients receive the same retry delay from a server.
+**Note**: If `jitter_factor` is configured, jitter is still applied to server-specified
+`Retry-After` values to prevent thundering herd issues when many clients receive the same retry
+delay from a server.
 
 ## API Reference
 

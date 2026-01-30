@@ -7,32 +7,33 @@ from unittest.mock import Mock, call, patch
 import httpx
 import pytest
 
-from aresnet.request import _parse_retry_after, request_with_automatic_retry
+from aresnet.request import request_with_automatic_retry
+from aresnet.utils import parse_retry_after
 
 TEST_URL = "https://api.example.com/data"
 
 
 ##################################################
-#     Tests for _parse_retry_after              #
+#     Tests for parse_retry_after               #
 ##################################################
 
 
-def test_parse_retry_after_integer() -> None:
+def testparse_retry_after_integer() -> None:
     """Test parsing Retry-After header with integer seconds."""
-    assert _parse_retry_after("120") == 120.0
-    assert _parse_retry_after("0") == 0.0
-    assert _parse_retry_after("3600") == 3600.0
+    assert parse_retry_after("120") == 120.0
+    assert parse_retry_after("0") == 0.0
+    assert parse_retry_after("3600") == 3600.0
 
 
-def test_parse_retry_after_none() -> None:
+def testparse_retry_after_none() -> None:
     """Test parsing None Retry-After header."""
-    assert _parse_retry_after(None) is None
+    assert parse_retry_after(None) is None
 
 
-def test_parse_retry_after_invalid_string() -> None:
+def testparse_retry_after_invalid_string() -> None:
     """Test parsing invalid Retry-After header."""
-    assert _parse_retry_after("invalid") is None
-    assert _parse_retry_after("not a number") is None
+    assert parse_retry_after("invalid") is None
+    assert parse_retry_after("not a number") is None
 
 
 def test_parse_retry_after_http_date() -> None:
@@ -42,17 +43,18 @@ def test_parse_retry_after_http_date() -> None:
     # Mock datetime.now to return a fixed time
     fixed_now = datetime(2015, 10, 21, 7, 28, 0, tzinfo=timezone.utc)
     
-    with patch("aresnet.request.datetime") as mock_datetime:
+    with patch("aresnet.utils.datetime") as mock_datetime:
         # Configure the mock to return our fixed time for now()
         mock_datetime.now.return_value = fixed_now
         # But still allow datetime to be used for other operations
         mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
         
         # Test with a date 60 seconds in the future
-        result = _parse_retry_after("Wed, 21 Oct 2015 07:29:00 GMT")
+        result = parse_retry_after("Wed, 21 Oct 2015 07:29:00 GMT")
         
         # Should return approximately 60 seconds
         assert result is not None
+        assert 59.0 <= result <= 61.0
         assert 59.0 <= result <= 61.0
 
 
@@ -178,13 +180,14 @@ def test_request_with_jitter_applied(mock_sleep: Mock) -> None:
     mock_request_func = Mock(side_effect=[mock_fail_response, mock_success_response])
     
     # Mock random.uniform to return a specific jitter value
-    with patch("aresnet.request.random.uniform", return_value=0.05):  # 5% jitter
+    with patch("aresnet.request.random.uniform", return_value=0.05):  # returns 5% of jitter_factor
         response = request_with_automatic_retry(
             url=TEST_URL,
             method="GET",
             request_func=mock_request_func,
             status_forcelist=(503,),
             backoff_factor=1.0,
+            jitter_factor=1.0,  # Jitter factor of 1.0
         )
     
     assert response == mock_success_response
@@ -195,7 +198,7 @@ def test_request_with_jitter_applied(mock_sleep: Mock) -> None:
 
 
 def test_request_jitter_range(mock_sleep: Mock) -> None:
-    """Test that jitter is within expected range (0-10% of base)."""
+    """Test that jitter is within expected range based on jitter_factor."""
     mock_fail_response = Mock(spec=httpx.Response, status_code=503)
     mock_fail_response.headers = {}
     mock_success_response = Mock(spec=httpx.Response, status_code=200)
@@ -212,6 +215,7 @@ def test_request_jitter_range(mock_sleep: Mock) -> None:
                 request_func=mock_request_func,
                 status_forcelist=(503,),
                 backoff_factor=2.0,
+                jitter_factor=1.0,  # Jitter factor of 1.0
             )
         
         assert response == mock_success_response
@@ -230,13 +234,14 @@ def test_request_jitter_with_retry_after(mock_sleep: Mock) -> None:
     mock_success_response = Mock(spec=httpx.Response, status_code=200)
     mock_request_func = Mock(side_effect=[mock_fail_response, mock_success_response])
     
-    # Mock jitter to 10% (maximum)
+    # Mock jitter to 0.1 (10% of jitter_factor)
     with patch("aresnet.request.random.uniform", return_value=0.1):
         response = request_with_automatic_retry(
             url=TEST_URL,
             method="GET",
             request_func=mock_request_func,
             status_forcelist=(429,),
+            jitter_factor=1.0,  # Jitter factor of 1.0
         )
     
     assert response == mock_success_response

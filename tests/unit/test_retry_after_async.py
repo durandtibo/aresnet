@@ -7,32 +7,33 @@ from unittest.mock import AsyncMock, Mock, call, patch
 import httpx
 import pytest
 
-from aresnet.request_async import _parse_retry_after, request_with_automatic_retry_async
+from aresnet.request_async import request_with_automatic_retry_async
+from aresnet.utils import parse_retry_after
 
 TEST_URL = "https://api.example.com/data"
 
 
 ##################################################
-#     Tests for _parse_retry_after              #
+#     Tests for parse_retry_after               #
 ##################################################
 
 
-def test_parse_retry_after_integer_async() -> None:
+def testparse_retry_after_integer_async() -> None:
     """Test parsing Retry-After header with integer seconds."""
-    assert _parse_retry_after("120") == 120.0
-    assert _parse_retry_after("0") == 0.0
-    assert _parse_retry_after("3600") == 3600.0
+    assert parse_retry_after("120") == 120.0
+    assert parse_retry_after("0") == 0.0
+    assert parse_retry_after("3600") == 3600.0
 
 
-def test_parse_retry_after_none_async() -> None:
+def testparse_retry_after_none_async() -> None:
     """Test parsing None Retry-After header."""
-    assert _parse_retry_after(None) is None
+    assert parse_retry_after(None) is None
 
 
-def test_parse_retry_after_invalid_string_async() -> None:
+def testparse_retry_after_invalid_string_async() -> None:
     """Test parsing invalid Retry-After header."""
-    assert _parse_retry_after("invalid") is None
-    assert _parse_retry_after("not a number") is None
+    assert parse_retry_after("invalid") is None
+    assert parse_retry_after("not a number") is None
 
 
 ##################################################
@@ -171,6 +172,7 @@ async def test_request_with_jitter_applied_async(mock_asleep: Mock) -> None:
             request_func=mock_request_func,
             status_forcelist=(503,),
             backoff_factor=1.0,
+            jitter_factor=1.0,  # Jitter factor of 1.0
         )
     
     assert response == mock_success_response
@@ -199,6 +201,7 @@ async def test_request_jitter_range_async(mock_asleep: Mock) -> None:
                 request_func=mock_request_func,
                 status_forcelist=(503,),
                 backoff_factor=2.0,
+                jitter_factor=1.0,  # Jitter factor of 1.0
             )
         
         assert response == mock_success_response
@@ -225,6 +228,7 @@ async def test_request_jitter_with_retry_after_async(mock_asleep: Mock) -> None:
             method="GET",
             request_func=mock_request_func,
             status_forcelist=(429,),
+            jitter_factor=1.0,  # Jitter factor of 1.0
         )
     
     assert response == mock_success_response
