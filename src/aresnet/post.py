@@ -64,9 +64,6 @@ def post_with_automatic_retry(
         >>> response = post_with_automatic_retry(
         ...     "https://api.example.com/data", json={"key": "value"}
         ... )  # doctest: +SKIP
-        >>> response.json()  # doctest: +SKIP
-        >>> response.status_code  # doctest: +SKIP
-        201
 
         ```
     """

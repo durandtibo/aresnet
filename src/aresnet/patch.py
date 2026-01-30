@@ -65,9 +65,6 @@ def patch_with_automatic_retry(
         >>> response = patch_with_automatic_retry(
         ...     "https://api.example.com/resource/123", json={"status": "active"}
         ... )  # doctest: +SKIP
-        >>> response.json()  # doctest: +SKIP
-        >>> response.status_code  # doctest: +SKIP
-        200
 
         ```
     """

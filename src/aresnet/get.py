@@ -62,9 +62,6 @@ def get_with_automatic_retry(
         ```pycon
         >>> from aresnet import get_with_automatic_retry
         >>> response = get_with_automatic_retry("https://api.example.com/data")  # doctest: +SKIP
-        >>> response.json()  # doctest: +SKIP
-        >>> response.status_code  # doctest: +SKIP
-        200
 
         ```
     """

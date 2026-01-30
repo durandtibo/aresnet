@@ -22,9 +22,6 @@ def validate_retry_params(max_retries: int, backoff_factor: float) -> None:
         >>> from aresnet.utils import validate_retry_params
         >>> validate_retry_params(max_retries=3, backoff_factor=0.5)
         >>> validate_retry_params(max_retries=-1, backoff_factor=0.5)  # doctest: +SKIP
-        Traceback (most recent call last):
-            ...
-        ValueError: max_retries must be >= 0, got -1
 
         ```
     """

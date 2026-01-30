@@ -82,8 +82,6 @@ def request_with_automatic_retry(
         ...         backoff_factor=1.0,
         ...     )  # doctest: +SKIP
         ...
-        >>> response.status_code  # doctest: +SKIP
-        200
 
         ```
     """
