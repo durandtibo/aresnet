@@ -22,9 +22,9 @@ def mock_client(mock_response: httpx.Response) -> httpx.Client:
     return Mock(spec=httpx.Client, get=Mock(return_value=mock_response))
 
 
-##################################################
+##############################################
 #     Tests for get_with_automatic_retry     #
-##################################################
+##############################################
 
 
 def test_get_with_automatic_retry_successful_get(

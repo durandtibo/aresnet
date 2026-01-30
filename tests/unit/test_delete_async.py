@@ -30,9 +30,9 @@ def mock_client(mock_response: httpx.Response) -> httpx.AsyncClient:
     )
 
 
-##################################################
+#######################################################
 #     Tests for delete_with_automatic_retry_async     #
-##################################################
+#######################################################
 
 
 @pytest.mark.asyncio

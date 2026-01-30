@@ -14,9 +14,9 @@ from aresnet.utils import parse_retry_after
 TEST_URL = "https://api.example.com/data"
 
 
-##################################################
+#######################################
 #     Tests for parse_retry_after     #
-##################################################
+#######################################
 
 
 def testparse_retry_after_integer_async() -> None:
@@ -37,9 +37,9 @@ def testparse_retry_after_invalid_string_async() -> None:
     assert parse_retry_after("not a number") is None
 
 
-##################################################
-#     Tests for Retry-After in async retry      #
-##################################################
+################################################
+#     Tests for Retry-After in async retry     #
+################################################
 
 
 @pytest.mark.asyncio
@@ -155,9 +155,9 @@ async def test_request_with_retry_after_mixed_with_backoff_async(mock_asleep: Mo
     assert mock_asleep.call_args_list == [call(45.0), call(0.6)]
 
 
-##################################################
+##########################################
 #     Tests for jitter functionality     #
-##################################################
+##########################################
 
 
 @pytest.mark.asyncio

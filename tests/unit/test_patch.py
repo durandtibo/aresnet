@@ -22,9 +22,9 @@ def mock_client(mock_response: httpx.Response) -> httpx.Client:
     return Mock(spec=httpx.Client, patch=Mock(return_value=mock_response))
 
 
-##################################################
+################################################
 #     Tests for patch_with_automatic_retry     #
-##################################################
+################################################
 
 
 def test_patch_with_automatic_retry_successful_patch(
