@@ -28,8 +28,8 @@ def post_with_automatic_retry(
     status_forcelist: tuple[int, ...] = RETRY_STATUS_CODES,
     **kwargs: Any,
 ) -> httpx.Response:
-    r"""Send an HTTP POST request with automatic retry logic for
-    transient errors.
+    r"""Send an HTTP POST request with automatic retry logic for transient
+    errors.
 
     This function performs an HTTP POST request with a configured retry policy
     for transient server errors (429, 500, 502, 503, 504). It applies an
