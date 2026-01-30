@@ -99,14 +99,15 @@ async def test_delete_with_automatic_retry_async_multiple_headers() -> None:
             url=f"{HTTPBIN_URL}/delete",
             client=client,
             headers={
-                "X-Request-ID": "abc-123",
+                "X-Custom-Header-1": "value-1",
+                "X-Custom-Header-2": "value-2",
                 "X-Correlation-ID": "xyz-789",
-                "User-Agent": "test-client/1.0",
             },
         )
 
     assert response.status_code == 200
     response_data = response.json()
-    # httpbin normalizes header names to title case: "X-Request-ID" becomes "X-Request-Id"
-    assert response_data["headers"]["X-Request-Id"] == "abc-123"
+    # httpbin normalizes header names to title case
+    assert response_data["headers"]["X-Custom-Header-1"] == "value-1"
+    assert response_data["headers"]["X-Custom-Header-2"] == "value-2"
     assert response_data["headers"]["X-Correlation-Id"] == "xyz-789"
