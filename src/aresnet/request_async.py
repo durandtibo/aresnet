@@ -155,7 +155,7 @@ async def request_with_automatic_retry_async(
     if response is None:  # pragma: no cover
         # This should never happen, but handle it for type safety
         msg = f"{method} request to {url} failed after {max_retries + 1} attempts"
-        raise RuntimeError(msg)
+        raise HttpRequestError(method=method, url=url, message=msg)
     raise HttpRequestError(
         method=method,
         url=url,
