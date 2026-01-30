@@ -13,7 +13,7 @@ from aresnet import (
     delete_with_automatic_retry_async,
 )
 
-TEST_URL = "https://api.example.com/resource/123"
+TEST_URL = "https://api.example.com/data"
 
 
 @pytest.fixture
@@ -130,7 +130,7 @@ async def test_delete_with_automatic_retry_async_non_retryable_status_code(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api\.example\.com/resource/123 failed with status 404",
+        match=r"DELETE request to https://api.example.com/data failed with status 404",
     ):
         await delete_with_automatic_retry_async(TEST_URL, client=mock_client)
 
@@ -160,7 +160,7 @@ async def test_delete_with_automatic_retry_async_timeout_exception(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 timed out \(1 attempts\)",
+        match=r"DELETE request to https://api.example.com/data timed out \(1 attempts\)",
     ):
         await delete_with_automatic_retry_async(TEST_URL, client=mock_client, max_retries=0)
 
@@ -177,7 +177,7 @@ async def test_delete_with_automatic_retry_async_timeout_exception_with_retries(
     with (
         pytest.raises(
             HttpRequestError,
-            match=r"DELETE request to https://api.example.com/resource/123 timed out \(3 attempts\)",
+            match=r"DELETE request to https://api.example.com/data timed out \(3 attempts\)",
         ),
     ):
         await delete_with_automatic_retry_async(TEST_URL, client=mock_client, max_retries=2)
@@ -195,7 +195,7 @@ async def test_delete_with_automatic_retry_async_request_error(
     with pytest.raises(
         HttpRequestError,
         match=(
-            r"DELETE request to https://api.example.com/resource/123 failed after 1 attempts: "
+            r"DELETE request to https://api.example.com/data failed after 1 attempts: "
             r"Connection failed"
         ),
     ):
@@ -426,7 +426,7 @@ async def test_delete_with_automatic_retry_async_error_message_includes_url(
     with pytest.raises(
         HttpRequestError,
         match=(
-            r"DELETE request to https://api.example.com/resource/123 failed with status 503 "
+            r"DELETE request to https://api.example.com/data failed with status 503 "
             r"after 1 attempts"
         ),
     ):
@@ -446,7 +446,7 @@ async def test_delete_with_automatic_retry_async_client_close_on_exception(
         patch("httpx.AsyncClient", return_value=mock_client),
         pytest.raises(
             HttpRequestError,
-            match=r"DELETE request to https://api.example.com/resource/123 timed out \(1 attempts\)",
+            match=r"DELETE request to https://api.example.com/data timed out \(1 attempts\)",
         ),
     ):
         await delete_with_automatic_retry_async(TEST_URL, max_retries=0)
@@ -481,7 +481,7 @@ async def test_delete_with_automatic_retry_async_network_error(
     mock_client.delete.side_effect = httpx.NetworkError("Network unreachable")
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 failed after 4 attempts",
+        match=r"DELETE request to https://api.example.com/data failed after 4 attempts",
     ):
         await delete_with_automatic_retry_async(TEST_URL, client=mock_client, max_retries=3)
 
@@ -506,7 +506,7 @@ async def test_delete_with_automatic_retry_async_timeout_exception_types(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 timed out",
+        match=r"DELETE request to https://api.example.com/data timed out",
     ):
         await delete_with_automatic_retry_async(TEST_URL, client=mock_client, max_retries=1)
 
@@ -524,7 +524,7 @@ async def test_delete_with_automatic_retry_async_client_errors_not_retried(
 
     with pytest.raises(
         HttpRequestError,
-        match=f"DELETE request to https://api\\.example\\.com/resource/123 failed with status {status_code}",
+        match=f"DELETE request to https://api\\.example\\.com/data failed with status {status_code}",
     ):
         await delete_with_automatic_retry_async(TEST_URL, client=mock_client, max_retries=3)
 

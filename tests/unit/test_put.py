@@ -9,7 +9,7 @@ import pytest
 
 from aresnet import RETRY_STATUS_CODES, HttpRequestError, put_with_automatic_retry
 
-TEST_URL = "https://api.example.com/resource"
+TEST_URL = "https://api.example.com/data"
 
 
 @pytest.fixture
@@ -111,7 +111,7 @@ def test_put_with_automatic_retry_non_retryable_status_code(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api\.example\.com/resource failed with status 404",
+        match=r"PUT request to https://api.example.com/data failed with status 404",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client)
 
@@ -139,7 +139,7 @@ def test_put_with_automatic_retry_timeout_exception(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api.example.com/resource timed out \(1 attempts\)",
+        match=r"PUT request to https://api.example.com/data timed out \(1 attempts\)",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client, max_retries=0)
 
@@ -154,7 +154,7 @@ def test_put_with_automatic_retry_timeout_exception_with_retries(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api.example.com/resource timed out \(3 attempts\)",
+        match=r"PUT request to https://api.example.com/data timed out \(3 attempts\)",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client, max_retries=2)
 
@@ -170,7 +170,7 @@ def test_put_with_automatic_retry_request_error(
     with pytest.raises(
         HttpRequestError,
         match=(
-            r"PUT request to https://api.example.com/resource failed after 1 attempts: "
+            r"PUT request to https://api.example.com/data failed after 1 attempts: "
             r"Connection failed"
         ),
     ):
@@ -391,7 +391,7 @@ def test_put_with_automatic_retry_error_message_includes_url(
     with pytest.raises(
         HttpRequestError,
         match=(
-            r"PUT request to https://api.example.com/resource failed with status 503 "
+            r"PUT request to https://api.example.com/data failed with status 503 "
             r"after 1 attempts"
         ),
     ):
@@ -410,7 +410,7 @@ def test_put_with_automatic_retry_client_close_on_exception(
         patch("httpx.Client", return_value=mock_client),
         pytest.raises(
             HttpRequestError,
-            match=r"PUT request to https://api.example.com/resource timed out \(1 attempts\)",
+            match=r"PUT request to https://api.example.com/data timed out \(1 attempts\)",
         ),
     ):
         put_with_automatic_retry(TEST_URL, max_retries=0)
@@ -443,7 +443,7 @@ def test_put_with_automatic_retry_network_error(
     mock_client.put.side_effect = httpx.NetworkError("Network unreachable")
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api.example.com/resource failed after 4 attempts",
+        match=r"PUT request to https://api.example.com/data failed after 4 attempts",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -455,7 +455,7 @@ def test_put_with_automatic_retry_read_error(mock_client: httpx.Client, mock_sle
     mock_client.put.side_effect = httpx.ReadError("Read error")
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api.example.com/resource failed after 4 attempts",
+        match=r"PUT request to https://api.example.com/data failed after 4 attempts",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -467,7 +467,7 @@ def test_put_with_automatic_retry_write_error(mock_client: httpx.Client, mock_sl
     mock_client.put.side_effect = httpx.WriteError("Write error")
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api.example.com/resource failed after 4 attempts",
+        match=r"PUT request to https://api.example.com/data failed after 4 attempts",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -481,7 +481,7 @@ def test_put_with_automatic_retry_connect_timeout(
     mock_client.put.side_effect = httpx.ConnectTimeout("Connection timeout")
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api.example.com/resource timed out \(4 attempts\)",
+        match=r"PUT request to https://api.example.com/data timed out \(4 attempts\)",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -493,7 +493,7 @@ def test_put_with_automatic_retry_read_timeout(mock_client: httpx.Client, mock_s
     mock_client.put.side_effect = httpx.ReadTimeout("Read timeout")
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api.example.com/resource timed out \(4 attempts\)",
+        match=r"PUT request to https://api.example.com/data timed out \(4 attempts\)",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -505,7 +505,7 @@ def test_put_with_automatic_retry_pool_timeout(mock_client: httpx.Client, mock_s
     mock_client.put.side_effect = httpx.PoolTimeout("Pool timeout")
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api.example.com/resource timed out \(4 attempts\)",
+        match=r"PUT request to https://api.example.com/data timed out \(4 attempts\)",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -518,7 +518,7 @@ def test_put_with_automatic_retry_proxy_error(mock_client: httpx.Client, mock_sl
 
     with pytest.raises(
         HttpRequestError,
-        match=r"PUT request to https://api.example.com/resource failed after 4 attempts",
+        match=r"PUT request to https://api.example.com/data failed after 4 attempts",
     ):
         put_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
