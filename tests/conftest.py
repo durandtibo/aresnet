@@ -28,7 +28,9 @@ def mock_random() -> Generator[Mock, None, None]:
     """Patch random.uniform to make jitter deterministic in tests.
     
     This fixture is auto-used to ensure all tests have deterministic
-    behavior when jitter is applied to retry backoff.
+    behavior when jitter is applied to retry backoff. Patches both
+    sync and async module versions.
     """
-    with patch("random.uniform", return_value=0.0) as mock:
-        yield mock
+    with patch("aresnet.request.random.uniform", return_value=0.0) as mock1, \
+         patch("aresnet.request_async.random.uniform", return_value=0.0) as mock2:
+        yield mock1

@@ -8,6 +8,7 @@ __all__ = ["request_with_automatic_retry_async"]
 import asyncio
 import logging
 import random
+from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import TYPE_CHECKING, Any
 
@@ -19,7 +20,6 @@ from aresnet.config import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Awaitable
-    from datetime import datetime
 
 import httpx
 
@@ -61,9 +61,8 @@ def _parse_retry_after(retry_after_header: str | None) -> float | None:
 
     # Try parsing as HTTP-date
     try:
-        import time
         retry_date: datetime = parsedate_to_datetime(retry_after_header)
-        now = parsedate_to_datetime(time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime()))
+        now = datetime.now(timezone.utc)
         delta_seconds = (retry_date - now).total_seconds()
         # Ensure we don't return negative values
         return max(0.0, delta_seconds)

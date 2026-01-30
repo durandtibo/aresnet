@@ -259,6 +259,9 @@ The `Retry-After` header supports two formats:
 - **Integer seconds**: `Retry-After: 120` (wait 120 seconds)
 - **HTTP-date**: `Retry-After: Wed, 21 Oct 2015 07:28:00 GMT` (wait until this time)
 
+**Note**: Jitter (up to 10%) is still applied to server-specified `Retry-After` values to prevent
+thundering herd issues when many clients receive the same retry delay from a server.
+
 ## API Reference
 
 ### `get_with_automatic_retry()`
