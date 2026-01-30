@@ -389,7 +389,7 @@ async def post_with_automatic_retry_async(
         ...     response = await post_with_automatic_retry_async(
         ...         "https://api.example.com/data", json={"key": "value"}
         ...     )
-        ...     return response.status_code
+        ...     return response.json()
         ...
         >>> asyncio.run(example())  # doctest: +SKIP
 
@@ -517,7 +517,7 @@ async def put_with_automatic_retry_async(
         ...     response = await put_with_automatic_retry_async(
         ...         "https://api.example.com/resource/123", json={"name": "updated"}
         ...     )
-        ...     return response.status_code
+        ...     return response.json()
         ...
         >>> asyncio.run(example())  # doctest: +SKIP
 
@@ -774,7 +774,7 @@ async def patch_with_automatic_retry_async(
         ...     response = await patch_with_automatic_retry_async(
         ...         "https://api.example.com/resource/123", json={"status": "active"}
         ...     )
-        ...     return response.status_code
+        ...     return response.json()
         ...
         >>> asyncio.run(example())  # doctest: +SKIP
 
