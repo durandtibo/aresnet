@@ -8,7 +8,6 @@ __all__ = [
     "handle_response",
     "handle_timeout_exception",
     "parse_retry_after",
-    "should_retry_status",
     "validate_retry_params",
 ]
 
@@ -102,19 +101,6 @@ def parse_retry_after(retry_after_header: str | None) -> float | None:
         return None
 
 
-def should_retry_status(status_code: int, status_forcelist: tuple[int, ...]) -> bool:
-    """Check if a status code should trigger a retry.
-
-    Args:
-        status_code: The HTTP status code to check.
-        status_forcelist: Tuple of HTTP status codes that should trigger a retry.
-
-    Returns:
-        True if the status code is in the retry list, False otherwise.
-    """
-    return status_code in status_forcelist
-
-
 def calculate_sleep_time(
     attempt: int,
     backoff_factor: float,
@@ -177,7 +163,7 @@ def handle_response(
         HttpRequestError: If the status code is not retryable (not in status_forcelist).
     """
     # Non-retryable HTTP error (e.g., 404, 401, 403)
-    if not should_retry_status(response.status_code, status_forcelist):
+    if response.status_code not in status_forcelist:
         logger.debug(
             f"{method} request to {url} failed with non-retryable status {response.status_code}"
         )
