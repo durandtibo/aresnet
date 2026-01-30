@@ -338,7 +338,7 @@ Trigger a restructuring (move to Option B) when **any** of these conditions are 
 | Navigation           | ⭐⭐⭐⭐   | ⭐⭐⭐⭐        | ⭐⭐⭐⭐    | ⭐⭐⭐⭐⭐    |
 | Current size fit     | ⭐⭐⭐⭐⭐ | ⭐⭐            | ⭐⭐⭐      | ⭐⭐⭐⭐     |
 | Sync/async clarity   | ⭐⭐⭐⭐   | ⭐⭐⭐⭐⭐       | ⭐⭐⭐⭐⭐  | ⭐⭐⭐       |
-| **Total**            | **36/40**   | **27/40**       | **31/40**   | **29/40**    |
+| **Total**            | **36/40**   | **28/40**       | **32/40**   | **30/40**    |
 
 ## Evolution Timeline
 
