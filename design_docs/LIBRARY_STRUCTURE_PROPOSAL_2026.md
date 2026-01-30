@@ -273,7 +273,7 @@ src/aresnet/
    ```python
    # Current (Excellent)
    from aresnet import get_with_automatic_retry, get_with_automatic_retry_async
-   
+
    # With sub-packages (More verbose, no clear benefit at this size)
    from aresnet.methods.sync import get_with_automatic_retry
    from aresnet.methods.async_ import get_with_automatic_retry_async
@@ -373,7 +373,7 @@ This minimal-change approach maintains stability for users while preserving all 
 
 ---
 
-**Document Status**: Active  
-**Last Updated**: January 2026  
-**Supersedes**: LIBRARY_STRUCTURE_PROPOSAL.md (2025)  
+**Document Status**: Active
+**Last Updated**: January 2026
+**Supersedes**: LIBRARY_STRUCTURE_PROPOSAL.md (2025)
 **Next Review**: When library reaches 2,000 lines or 18 files
