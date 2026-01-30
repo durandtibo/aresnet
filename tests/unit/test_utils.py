@@ -155,15 +155,15 @@ def test_handle_response_non_retryable_status() -> None:
     assert "failed with status 404" in str(error)
 
 
-def test_handle_response_various_non_retryable_codes() -> None:
+@pytest.mark.parametrize("status_code", [400, 401, 403, 404, 422])
+def test_handle_response_various_non_retryable_codes(status_code: int) -> None:
     """Test various non-retryable status codes."""
-    for status_code in [400, 401, 403, 404, 422]:
-        mock_response = Mock(spec=httpx.Response, status_code=status_code)
+    mock_response = Mock(spec=httpx.Response, status_code=status_code)
 
-        with pytest.raises(HttpRequestError) as exc_info:
-            handle_response(mock_response, TEST_URL, "POST", (500, 503))
+    with pytest.raises(HttpRequestError) as exc_info:
+        handle_response(mock_response, TEST_URL, "POST", (500, 503))
 
-        assert exc_info.value.status_code == status_code
+    assert exc_info.value.status_code == status_code
 
 
 ##################################################
@@ -266,18 +266,19 @@ def test_handle_request_error_preserves_cause() -> None:
     assert exc_info.value.__cause__ == exc
 
 
-def test_handle_request_error_various_error_types() -> None:
-    """Test handling of various request error types."""
-    error_types = [
+@pytest.mark.parametrize(
+    "exc",
+    [
         httpx.ConnectError("Connection refused"),
         httpx.ReadError("Read failed"),
         httpx.WriteError("Write failed"),
         httpx.ProxyError("Proxy error"),
-    ]
+    ],
+)
+def test_handle_request_error_various_error_types(exc: httpx.RequestError) -> None:
+    """Test handling of various request error types."""
+    with pytest.raises(HttpRequestError) as exc_info:
+        handle_request_error(exc, TEST_URL, "GET", 1, 1)
 
-    for exc in error_types:
-        with pytest.raises(HttpRequestError) as exc_info:
-            handle_request_error(exc, TEST_URL, "GET", 1, 1)
-
-        assert exc_info.value.__cause__ == exc
+    assert exc_info.value.__cause__ == exc
 
