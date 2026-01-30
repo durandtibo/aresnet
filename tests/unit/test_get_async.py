@@ -1,3 +1,5 @@
+r"""Unit tests for get_with_automatic_retry_async function."""
+
 from __future__ import annotations
 
 from unittest.mock import AsyncMock, Mock, call, patch

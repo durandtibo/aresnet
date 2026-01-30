@@ -1,3 +1,5 @@
+r"""Unit tests for delete_with_automatic_retry function."""
+
 from __future__ import annotations
 
 from unittest.mock import Mock, call, patch
@@ -7,7 +9,7 @@ import pytest
 
 from aresnet import RETRY_STATUS_CODES, HttpRequestError, delete_with_automatic_retry
 
-TEST_URL = "https://api.example.com/resource/123"
+TEST_URL = "https://api.example.com/data"
 
 
 @pytest.fixture
@@ -111,7 +113,7 @@ def test_delete_with_automatic_retry_non_retryable_status_code(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api\.example\.com/resource/123 failed with status 404",
+        match=r"DELETE request to https://api.example.com/data failed with status 404",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client)
 
@@ -139,7 +141,7 @@ def test_delete_with_automatic_retry_timeout_exception(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 timed out \(1 attempts\)",
+        match=r"DELETE request to https://api.example.com/data timed out \(1 attempts\)",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client, max_retries=0)
 
@@ -154,7 +156,7 @@ def test_delete_with_automatic_retry_timeout_exception_with_retries(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 timed out \(3 attempts\)",
+        match=r"DELETE request to https://api.example.com/data timed out \(3 attempts\)",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client, max_retries=2)
 
@@ -170,7 +172,7 @@ def test_delete_with_automatic_retry_request_error(
     with pytest.raises(
         HttpRequestError,
         match=(
-            r"DELETE request to https://api.example.com/resource/123 failed after 1 attempts: "
+            r"DELETE request to https://api.example.com/data failed after 1 attempts: "
             r"Connection failed"
         ),
     ):
@@ -393,7 +395,7 @@ def test_delete_with_automatic_retry_error_message_includes_url(
     with pytest.raises(
         HttpRequestError,
         match=(
-            r"DELETE request to https://api.example.com/resource/123 failed with status 503 "
+            r"DELETE request to https://api.example.com/data failed with status 503 "
             r"after 1 attempts"
         ),
     ):
@@ -412,7 +414,7 @@ def test_delete_with_automatic_retry_client_close_on_exception(
         patch("httpx.Client", return_value=mock_client),
         pytest.raises(
             HttpRequestError,
-            match=r"DELETE request to https://api.example.com/resource/123 timed out \(1 attempts\)",
+            match=r"DELETE request to https://api.example.com/data timed out \(1 attempts\)",
         ),
     ):
         delete_with_automatic_retry(TEST_URL, max_retries=0)
@@ -445,7 +447,7 @@ def test_delete_with_automatic_retry_network_error(
     mock_client.delete.side_effect = httpx.NetworkError("Network unreachable")
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 failed after 4 attempts",
+        match=r"DELETE request to https://api.example.com/data failed after 4 attempts",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -459,7 +461,7 @@ def test_delete_with_automatic_retry_read_error(
     mock_client.delete.side_effect = httpx.ReadError("Read error")
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 failed after 4 attempts",
+        match=r"DELETE request to https://api.example.com/data failed after 4 attempts",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -473,7 +475,7 @@ def test_delete_with_automatic_retry_write_error(
     mock_client.delete.side_effect = httpx.WriteError("Write error")
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 failed after 4 attempts",
+        match=r"DELETE request to https://api.example.com/data failed after 4 attempts",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -487,7 +489,7 @@ def test_delete_with_automatic_retry_connect_timeout(
     mock_client.delete.side_effect = httpx.ConnectTimeout("Connection timeout")
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 timed out \(4 attempts\)",
+        match=r"DELETE request to https://api.example.com/data timed out \(4 attempts\)",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -501,7 +503,7 @@ def test_delete_with_automatic_retry_read_timeout(
     mock_client.delete.side_effect = httpx.ReadTimeout("Read timeout")
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 timed out \(4 attempts\)",
+        match=r"DELETE request to https://api.example.com/data timed out \(4 attempts\)",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -515,7 +517,7 @@ def test_delete_with_automatic_retry_pool_timeout(
     mock_client.delete.side_effect = httpx.PoolTimeout("Pool timeout")
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 timed out \(4 attempts\)",
+        match=r"DELETE request to https://api.example.com/data timed out \(4 attempts\)",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 
@@ -530,7 +532,7 @@ def test_delete_with_automatic_retry_proxy_error(
 
     with pytest.raises(
         HttpRequestError,
-        match=r"DELETE request to https://api.example.com/resource/123 failed after 4 attempts",
+        match=r"DELETE request to https://api.example.com/data failed after 4 attempts",
     ):
         delete_with_automatic_retry(TEST_URL, client=mock_client, max_retries=3)
 

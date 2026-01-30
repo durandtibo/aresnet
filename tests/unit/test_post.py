@@ -1,3 +1,5 @@
+r"""Unit tests for post_with_automatic_retry function."""
+
 from __future__ import annotations
 
 from unittest.mock import Mock, call, patch
