@@ -6,7 +6,9 @@ from __future__ import annotations
 __all__ = ["request_with_automatic_retry"]
 
 import logging
+import random
 import time
+from email.utils import parsedate_to_datetime
 from typing import TYPE_CHECKING, Any
 
 from aresnet.config import (
@@ -17,12 +19,56 @@ from aresnet.config import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from datetime import datetime
 
 import httpx
 
 from aresnet.exceptions import HttpRequestError
 
 logger: logging.Logger = logging.getLogger(__name__)
+
+
+def _parse_retry_after(retry_after_header: str | None) -> float | None:
+    """Parse the Retry-After header value.
+
+    The Retry-After header can be either:
+    1. A number of seconds (integer)
+    2. An HTTP-date (RFC 5322 format)
+
+    Args:
+        retry_after_header: The value of the Retry-After header.
+
+    Returns:
+        The number of seconds to wait, or None if the header is invalid.
+
+    Example:
+        ```pycon
+        >>> _parse_retry_after("120")
+        120.0
+        >>> _parse_retry_after("Wed, 21 Oct 2015 07:28:00 GMT")  # doctest: +SKIP
+        ...
+
+        ```
+    """
+    if retry_after_header is None:
+        return None
+
+    # Try parsing as an integer (seconds)
+    try:
+        return float(retry_after_header)
+    except ValueError:
+        pass
+
+    # Try parsing as HTTP-date
+    try:
+        retry_date: datetime = parsedate_to_datetime(retry_after_header)
+        now = parsedate_to_datetime(time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime()))
+        delta_seconds = (retry_date - now).total_seconds()
+        # Ensure we don't return negative values
+        return max(0.0, delta_seconds)
+    except (ValueError, TypeError, OverflowError):
+        logger.debug(f"Failed to parse Retry-After header: {retry_after_header}")
+        return None
 
 
 def request_with_automatic_retry(
@@ -133,8 +179,10 @@ def request_with_automatic_retry(
 
         except httpx.RequestError as exc:
             # Network error (connection failed, DNS failure, etc.) - retry if attempts remain
+            error_type = type(exc).__name__
             logger.debug(
-                f"{method} request to {url} encountered network error on attempt {attempt + 1}/{max_retries + 1}: {exc}"
+                f"{method} request to {url} encountered {error_type} on attempt "
+                f"{attempt + 1}/{max_retries + 1}: {exc}"
             )
             if attempt == max_retries:
                 raise HttpRequestError(
@@ -144,11 +192,27 @@ def request_with_automatic_retry(
                     cause=exc,
                 ) from exc
 
-        # Exponential backoff before next retry (skip on last attempt since we're about to fail)
+        # Exponential backoff with jitter before next retry (skip on last attempt since we're about to fail)
         if attempt < max_retries:
-            sleep_time = backoff_factor * (2**attempt)
-            logger.debug(f"Waiting {sleep_time:.2f}s before retry")
-            time.sleep(sleep_time)
+            # Check for Retry-After header in the response (if available)
+            retry_after_sleep: float | None = None
+            if response is not None and hasattr(response, "headers"):
+                retry_after_header = response.headers.get("Retry-After")
+                retry_after_sleep = _parse_retry_after(retry_after_header)
+
+            # Use Retry-After if available, otherwise use exponential backoff
+            if retry_after_sleep is not None:
+                sleep_time = retry_after_sleep
+                logger.debug(f"Using Retry-After header value: {sleep_time:.2f}s")
+            else:
+                sleep_time = backoff_factor * (2**attempt)
+
+            # Add jitter to prevent thundering herd problem
+            # Jitter is up to 10% of the sleep time
+            jitter = random.uniform(0, 0.1) * sleep_time
+            total_sleep_time = sleep_time + jitter
+            logger.debug(f"Waiting {total_sleep_time:.2f}s before retry (base={sleep_time:.2f}s, jitter={jitter:.2f}s)")
+            time.sleep(total_sleep_time)
 
     # All retries exhausted with retryable status code - raise final error
     # Note: response cannot be None here because if all attempts raised exceptions,
