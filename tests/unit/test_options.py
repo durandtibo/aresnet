@@ -69,8 +69,7 @@ def test_options_with_automatic_retry_retry_on_503_status(
     mock_response_fail = Mock(spec=httpx.Response, status_code=503)
     mock_client.options.side_effect = [mock_response_fail, mock_response]
 
-    with patch("httpx.Client.options", side_effect=[mock_response_fail, mock_response]):
-        response = options_with_automatic_retry(TEST_URL, client=mock_client)
+    response = options_with_automatic_retry(TEST_URL, client=mock_client)
 
     assert response.status_code == 200
     mock_sleep.assert_called_once_with(0.3)
@@ -264,7 +263,7 @@ def test_options_with_automatic_retry_custom_status_forcelist(
 def test_options_with_automatic_retry_default_retry_status_codes(
     mock_response: httpx.Response, mock_client: httpx.Client, mock_sleep: Mock, status_code: int
 ) -> None:
-    """Test custom status codes for retry."""
+    """Test that default retry status codes trigger retries."""
     mock_response_fail = Mock(spec=httpx.Response, status_code=status_code)
     mock_client.options.side_effect = [mock_response_fail, mock_response]
 
