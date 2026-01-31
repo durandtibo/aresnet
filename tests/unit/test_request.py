@@ -7,13 +7,13 @@ from unittest.mock import Mock, call
 import httpx
 import pytest
 
-from aresnet import (
+from aresilient import (
     DEFAULT_BACKOFF_FACTOR,
     DEFAULT_MAX_RETRIES,
     RETRY_STATUS_CODES,
     HttpRequestError,
 )
-from aresnet.request import request_with_automatic_retry
+from aresilient.request import request_with_automatic_retry
 
 TEST_URL = "https://api.example.com/data"
 

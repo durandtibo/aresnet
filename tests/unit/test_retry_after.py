@@ -9,8 +9,8 @@ from unittest.mock import Mock, call, patch
 import httpx
 import pytest
 
-from aresnet.request import request_with_automatic_retry
-from aresnet.utils import parse_retry_after
+from aresilient.request import request_with_automatic_retry
+from aresilient.utils import parse_retry_after
 
 TEST_URL = "https://api.example.com/data"
 
@@ -46,7 +46,7 @@ def test_parse_retry_after_http_date() -> None:
         ),
     )
 
-    with patch("aresnet.utils.datetime", mock_datetime) as mock_datetime:
+    with patch("aresilient.utils.datetime", mock_datetime) as mock_datetime:
         # Test with a date 60 seconds in the future
         result = parse_retry_after("Wed, 21 Oct 2015 07:29:00 GMT")
 
@@ -161,7 +161,7 @@ def test_request_with_jitter_applied(mock_sleep: Mock) -> None:
     mock_request_func = Mock(side_effect=[mock_fail_response, mock_success_response])
 
     # Mock random.uniform to return a specific jitter value
-    with patch("aresnet.utils.random.uniform", return_value=0.05):  # returns 5% of jitter_factor
+    with patch("aresilient.utils.random.uniform", return_value=0.05):  # returns 5% of jitter_factor
         response = request_with_automatic_retry(
             url=TEST_URL,
             method="GET",
@@ -186,7 +186,7 @@ def test_request_jitter_with_retry_after(mock_sleep: Mock) -> None:
     mock_request_func = Mock(side_effect=[mock_fail_response, mock_success_response])
 
     # Mock jitter to 0.1 (10% of jitter_factor)
-    with patch("aresnet.utils.random.uniform", return_value=0.1):
+    with patch("aresilient.utils.random.uniform", return_value=0.1):
         response = request_with_automatic_retry(
             url=TEST_URL,
             method="GET",

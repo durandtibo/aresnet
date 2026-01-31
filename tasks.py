@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-NAME = "aresnet"
+NAME = "aresilient"
 SOURCE = f"src/{NAME}"
 TESTS = "tests"
 UNIT_TESTS = f"{TESTS}/unit"

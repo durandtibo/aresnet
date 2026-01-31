@@ -7,7 +7,7 @@ from unittest.mock import Mock, call, patch
 import httpx
 import pytest
 
-from aresnet import RETRY_STATUS_CODES, HttpRequestError, get_with_automatic_retry
+from aresilient import RETRY_STATUS_CODES, HttpRequestError, get_with_automatic_retry
 
 TEST_URL = "https://api.example.com/data"
 
@@ -218,7 +218,7 @@ def test_get_with_automatic_retry_with_jitter_factor(
     mock_response_fail = Mock(spec=httpx.Response, status_code=500)
     mock_client.get.side_effect = [mock_response_fail, mock_response]
 
-    with patch("aresnet.utils.random.uniform", return_value=0.05):
+    with patch("aresilient.utils.random.uniform", return_value=0.05):
         response = get_with_automatic_retry(
             TEST_URL, client=mock_client, backoff_factor=1.0, jitter_factor=0.1
         )

@@ -1,4 +1,4 @@
-# Library Structure Proposal for aresnet
+# Library Structure Proposal for aresilient
 
 ## Executive Summary
 
@@ -9,7 +9,7 @@ After analyzing the current codebase (~1,350 lines, 16 modules), **I recommend c
 ### Current Layout
 
 ```
-src/aresnet/
+src/aresilient/
 ├── __init__.py          (52 lines)   - Main public API (18 exports)
 ├── config.py            (27 lines)   - Configuration constants
 ├── exceptions.py        (81 lines)   - Custom exception classes
@@ -32,10 +32,10 @@ Total: 16 Python files, ~1,350 lines
 
 ### Strengths of Current Structure
 
-1. ✅ **Excellent discoverability**: All modules visible at `aresnet.*` level
+1. ✅ **Excellent discoverability**: All modules visible at `aresilient.*` level
 2. ✅ **Clear sync/async separation**: `*_async.py` naming convention is intuitive
 3. ✅ **Consistent patterns**: All HTTP method modules follow identical structure
-4. ✅ **Simple imports**: `from aresnet import get_with_automatic_retry`
+4. ✅ **Simple imports**: `from aresilient import get_with_automatic_retry`
 5. ✅ **Manageable size**: ~1,350 lines is still small for a library
 6. ✅ **Clean responsibilities**: Each file has a single, focused purpose
 7. ✅ **Parallel structure**: Easy to find async equivalents of sync functions
@@ -74,17 +74,17 @@ Total: 16 Python files, ~1,350 lines
 
 ```python
 # Method-specific (most common)
-from aresnet import get_with_automatic_retry
-from aresnet import get_with_automatic_retry_async
+from aresilient import get_with_automatic_retry
+from aresilient import get_with_automatic_retry_async
 
 # Core request function (advanced)
-from aresnet import request_with_automatic_retry
+from aresilient import request_with_automatic_retry
 
 # Configuration
-from aresnet import DEFAULT_TIMEOUT, RETRY_STATUS_CODES
+from aresilient import DEFAULT_TIMEOUT, RETRY_STATUS_CODES
 
 # Exceptions
-from aresnet import HttpRequestError
+from aresilient import HttpRequestError
 ```
 
 ## Structure Options
@@ -93,7 +93,7 @@ from aresnet import HttpRequestError
 
 **Structure:**
 ```
-src/aresnet/
+src/aresilient/
 ├── __init__.py
 ├── config.py
 ├── exceptions.py
@@ -132,7 +132,7 @@ src/aresnet/
 
 **Structure:**
 ```
-src/aresnet/
+src/aresilient/
 ├── __init__.py          # Re-exports all public APIs
 ├── config.py            # Keep at root (frequently accessed)
 ├── exceptions.py        # Keep at root (frequently accessed)
@@ -182,7 +182,7 @@ src/aresnet/
 
 **Structure:**
 ```
-src/aresnet/
+src/aresilient/
 ├── __init__.py
 ├── config.py
 ├── exceptions.py
@@ -221,7 +221,7 @@ src/aresnet/
 
 **Structure:**
 ```
-src/aresnet/
+src/aresilient/
 ├── __init__.py
 ├── config.py
 ├── exceptions.py
@@ -258,11 +258,11 @@ src/aresnet/
 3. **User Experience**: Simple imports are critical for developer happiness:
    ```python
    # Current (Excellent)
-   from aresnet import get_with_automatic_retry, get_with_automatic_retry_async
+   from aresilient import get_with_automatic_retry, get_with_automatic_retry_async
 
    # With sub-packages (More verbose, no clear benefit at this size)
-   from aresnet.methods.sync import get_with_automatic_retry
-   from aresnet.methods.async_ import get_with_automatic_retry_async
+   from aresilient.methods.sync import get_with_automatic_retry
+   from aresilient.methods.async_ import get_with_automatic_retry_async
    ```
 
 4. **Python Philosophy**: "Flat is better than nested" (Zen of Python). The current structure embodies this principle.

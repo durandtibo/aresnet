@@ -1,24 +1,24 @@
-# aresnet
+# aresilient
 
 <p align="center">
-    <a href="https://github.com/durandtibo/aresnet/actions/workflows/ci.yaml">
-        <img alt="CI" src="https://github.com/durandtibo/aresnet/actions/workflows/ci.yaml/badge.svg">
+    <a href="https://github.com/durandtibo/aresilient/actions/workflows/ci.yaml">
+        <img alt="CI" src="https://github.com/durandtibo/aresilient/actions/workflows/ci.yaml/badge.svg">
     </a>
-    <a href="https://github.com/durandtibo/aresnet/actions/workflows/nightly-tests.yaml">
-        <img alt="Nightly Tests" src="https://github.com/durandtibo/aresnet/actions/workflows/nightly-tests.yaml/badge.svg">
+    <a href="https://github.com/durandtibo/aresilient/actions/workflows/nightly-tests.yaml">
+        <img alt="Nightly Tests" src="https://github.com/durandtibo/aresilient/actions/workflows/nightly-tests.yaml/badge.svg">
     </a>
-    <a href="https://github.com/durandtibo/aresnet/actions/workflows/nightly-package.yaml">
-        <img alt="Nightly Package Tests" src="https://github.com/durandtibo/aresnet/actions/workflows/nightly-package.yaml/badge.svg">
+    <a href="https://github.com/durandtibo/aresilient/actions/workflows/nightly-package.yaml">
+        <img alt="Nightly Package Tests" src="https://github.com/durandtibo/aresilient/actions/workflows/nightly-package.yaml/badge.svg">
     </a>
-    <a href="https://codecov.io/gh/durandtibo/aresnet">
-        <img alt="Codecov" src="https://codecov.io/gh/durandtibo/aresnet/branch/main/graph/badge.svg">
+    <a href="https://codecov.io/gh/durandtibo/aresilient">
+        <img alt="Codecov" src="https://codecov.io/gh/durandtibo/aresilient/branch/main/graph/badge.svg">
     </a>
     <br/>
-    <a href="https://durandtibo.github.io/aresnet/">
-        <img alt="Documentation" src="https://github.com/durandtibo/aresnet/actions/workflows/docs.yaml/badge.svg">
+    <a href="https://durandtibo.github.io/aresilient/">
+        <img alt="Documentation" src="https://github.com/durandtibo/aresilient/actions/workflows/docs.yaml/badge.svg">
     </a>
-    <a href="https://durandtibo.github.io/aresnet/dev/">
-        <img alt="Documentation" src="https://github.com/durandtibo/aresnet/actions/workflows/docs-dev.yaml/badge.svg">
+    <a href="https://durandtibo.github.io/aresilient/dev/">
+        <img alt="Documentation" src="https://github.com/durandtibo/aresilient/actions/workflows/docs-dev.yaml/badge.svg">
     </a>
     <br/>
     <a href="https://github.com/psf/black">
@@ -34,28 +34,28 @@
         <img  alt="Doc style: google" src="https://img.shields.io/badge/try%2Fexcept%20style-tryceratops%20%F0%9F%A6%96%E2%9C%A8-black">
     </a>
     <br/>
-    <a href="https://pypi.org/project/aresnet/">
-        <img alt="PYPI version" src="https://img.shields.io/pypi/v/aresnet">
+    <a href="https://pypi.org/project/aresilient/">
+        <img alt="PYPI version" src="https://img.shields.io/pypi/v/aresilient">
     </a>
-    <a href="https://pypi.org/project/aresnet/">
-        <img alt="Python" src="https://img.shields.io/pypi/pyversions/aresnet.svg">
+    <a href="https://pypi.org/project/aresilient/">
+        <img alt="Python" src="https://img.shields.io/pypi/pyversions/aresilient.svg">
     </a>
     <a href="https://opensource.org/licenses/BSD-3-Clause">
-        <img alt="BSD-3-Clause" src="https://img.shields.io/pypi/l/aresnet">
+        <img alt="BSD-3-Clause" src="https://img.shields.io/pypi/l/aresilient">
     </a>
     <br/>
-    <a href="https://pepy.tech/project/aresnet">
-        <img  alt="Downloads" src="https://static.pepy.tech/badge/aresnet">
+    <a href="https://pepy.tech/project/aresilient">
+        <img  alt="Downloads" src="https://static.pepy.tech/badge/aresilient">
     </a>
-    <a href="https://pepy.tech/project/aresnet">
-        <img  alt="Monthly downloads" src="https://static.pepy.tech/badge/aresnet/month">
+    <a href="https://pepy.tech/project/aresilient">
+        <img  alt="Monthly downloads" src="https://static.pepy.tech/badge/aresilient/month">
     </a>
     <br/>
 </p>
 
 ## Overview
 
-`aresnet` is a Python library that provides resilient HTTP request functionality with automatic
+`aresilient` is a Python library that provides resilient HTTP request functionality with automatic
 retry logic and exponential backoff. Built on top of the
 modern [httpx](https://www.python-httpx.org/) library, it simplifies handling transient failures in
 HTTP communications, making your applications more robust and fault-tolerant.
@@ -80,12 +80,12 @@ HTTP communications, making your applications more robust and fault-tolerant.
 ## Installation
 
 ```bash
-uv pip install aresnet
+uv pip install aresilient
 ```
 
-The following is the corresponding `aresnet` versions and supported dependencies.
+The following is the corresponding `aresilient` versions and supported dependencies.
 
-| `aresnet` | `httpx`       | `python` |
+| `aresilient` | `httpx`       | `python` |
 |-----------|---------------|----------|
 | `main`    | `>=0.28,<1.0` | `>=3.10` |
 
@@ -94,7 +94,7 @@ The following is the corresponding `aresnet` versions and supported dependencies
 ### Basic GET Request
 
 ```python
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Simple GET request with automatic retry
 response = get_with_automatic_retry("https://api.example.com/data")
@@ -104,7 +104,7 @@ print(response.json())
 ### Basic POST Request
 
 ```python
-from aresnet import post_with_automatic_retry
+from aresilient import post_with_automatic_retry
 
 # POST request with JSON payload
 response = post_with_automatic_retry(
@@ -116,7 +116,7 @@ print(response.status_code)
 ### Customizing Retry Behavior
 
 ```python
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Custom retry configuration
 response = get_with_automatic_retry(
@@ -133,7 +133,7 @@ response = get_with_automatic_retry(
 
 ```python
 import httpx
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Use your own httpx.Client for advanced configuration
 with httpx.Client(headers={"Authorization": "Bearer token"}) as client:
@@ -145,7 +145,7 @@ with httpx.Client(headers={"Authorization": "Bearer token"}) as client:
 ### Other HTTP Methods
 
 ```python
-from aresnet import (
+from aresilient import (
     put_with_automatic_retry,
     delete_with_automatic_retry,
     patch_with_automatic_retry,
@@ -168,7 +168,7 @@ response = patch_with_automatic_retry(
 ### Error Handling
 
 ```python
-from aresnet import get_with_automatic_retry, HttpRequestError
+from aresilient import get_with_automatic_retry, HttpRequestError
 
 try:
     response = get_with_automatic_retry("https://api.example.com/data")
@@ -185,7 +185,7 @@ All HTTP methods have async versions for concurrent request processing:
 
 ```python
 import asyncio
-from aresnet import get_with_automatic_retry_async
+from aresilient import get_with_automatic_retry_async
 
 
 async def fetch_data():
@@ -204,7 +204,7 @@ Process multiple requests concurrently for better performance:
 
 ```python
 import asyncio
-from aresnet import get_with_automatic_retry_async
+from aresilient import get_with_automatic_retry_async
 
 
 async def fetch_multiple():
@@ -414,13 +414,13 @@ Please check the instructions in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## API stability
 
-:warning: While `aresnet` is in development stage, no API is guaranteed to be stable from one
+:warning: While `aresilient` is in development stage, no API is guaranteed to be stable from one
 release to the next.
 In fact, it is very likely that the API will change multiple times before a stable 1.0.0 release.
-In practice, this means that upgrading `aresnet` to a new version will possibly break any code
-that was using the old version of `aresnet`.
+In practice, this means that upgrading `aresilient` to a new version will possibly break any code
+that was using the old version of `aresilient`.
 
 ## License
 
-`aresnet` is licensed under BSD 3-Clause "New" or "Revised" license available
+`aresilient` is licensed under BSD 3-Clause "New" or "Revised" license available
 in [LICENSE](LICENSE) file.

@@ -20,25 +20,25 @@ jobs:
   stable:
     uses: ./.github/workflows/test-package.yaml
     with:
-      install-cmd: 'uv pip install aresnet'
+      install-cmd: 'uv pip install aresilient'
 
   # Test stable version from PyPI with all extras
   stable-all:
     uses: ./.github/workflows/test-package.yaml
     with:
-      install-cmd: 'uv pip install "aresnet[all]"'
+      install-cmd: 'uv pip install "aresilient[all]"'
 
   # Test pre-release version from PyPI without extras
   latest:
     uses: ./.github/workflows/test-package.yaml
     with:
-      install-cmd: 'uv pip install --pre aresnet'
+      install-cmd: 'uv pip install --pre aresilient'
 
   # Test pre-release version from PyPI with all extras
   latest-all:
     uses: ./.github/workflows/test-package.yaml
     with:
-      install-cmd: 'uv pip install --pre "aresnet[all]"'
+      install-cmd: 'uv pip install --pre "aresilient[all]"'
 
 
   ########################

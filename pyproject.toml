@@ -11,7 +11,7 @@ only-include = ["src"]
 [tool.hatch.metadata.hooks.autoextras]
 
 [project]
-name = "aresnet"
+name = "aresilient"
 version = "0.0.1a0"
 description = "Python library focused on common HTTP request functionality"
 readme = "README.md"
@@ -83,11 +83,11 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/durandtibo/aresnet"
-Repository = "https://github.com/durandtibo/aresnet"
-Documentation = "https://durandtibo.github.io/aresnet/"
-Changelog = "https://github.com/durandtibo/aresnet/releases"
-Issues = "https://github.com/durandtibo/aresnet/issues"
+Homepage = "https://github.com/durandtibo/aresilient"
+Repository = "https://github.com/durandtibo/aresilient"
+Documentation = "https://durandtibo.github.io/aresilient/"
+Changelog = "https://github.com/durandtibo/aresilient/releases"
+Issues = "https://github.com/durandtibo/aresilient/issues"
 
 [tool.uv.pip]
 torch-backend = "auto"
@@ -97,7 +97,7 @@ source = ["src", "*/site-packages"]
 
 [tool.coverage.run]
 branch = true
-source = ["aresnet"]
+source = ["aresilient"]
 
 [tool.coverage.report]
 show_missing = true
