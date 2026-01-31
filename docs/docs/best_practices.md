@@ -106,6 +106,11 @@ Always reuse httpx clients when making multiple requests to benefit from connect
 import httpx
 from aresilient import get_with_automatic_retry, post_with_automatic_retry
 
+def process_profile(profile_data: dict) -> None:
+    """Process user profile data (example implementation)."""
+    # Placeholder - implement your processing logic here
+    print(f"Processing profile: {profile_data.get('id')}")
+
 # Good: Reuse client
 with httpx.Client(timeout=30.0) as client:
     users = get_with_automatic_retry(
@@ -386,7 +391,10 @@ def fetch_data_with_fallback(resource_id: str) -> dict:
 Handle different error types appropriately:
 
 ```python
+import logging
 from aresilient import get_with_automatic_retry, HttpRequestError
+
+logger = logging.getLogger(__name__)
 
 def fetch_data(url: str) -> dict:
     """Fetch data with appropriate error handling."""

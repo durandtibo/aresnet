@@ -121,6 +121,8 @@ The documentation will be available at `http://127.0.0.1:8000`.
 
 5. Commit your changes with clear, descriptive messages
 
+6. Push your branch and create a pull request (see [Pull Request Process](#pull-request-process) below)
+
 ### Writing Tests
 
 - Place tests in the `tests/` directory
