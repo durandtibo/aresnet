@@ -3,7 +3,7 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from aresnet import HttpRequestError, put_with_automatic_retry_async
+from aresilient import HttpRequestError, put_with_automatic_retry_async
 
 # Use httpbin.org for real HTTP testing
 HTTPBIN_URL = "https://httpbin.org"

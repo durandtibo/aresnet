@@ -8,14 +8,14 @@ from typing import Any
 
 import httpx
 
-from aresnet.config import (
+from aresilient.config import (
     DEFAULT_BACKOFF_FACTOR,
     DEFAULT_MAX_RETRIES,
     DEFAULT_TIMEOUT,
     RETRY_STATUS_CODES,
 )
-from aresnet.request_async import request_with_automatic_retry_async
-from aresnet.utils import validate_retry_params
+from aresilient.request_async import request_with_automatic_retry_async
+from aresilient.utils import validate_retry_params
 
 
 async def get_with_automatic_retry_async(
@@ -68,7 +68,7 @@ async def get_with_automatic_retry_async(
     Example:
         ```pycon
         >>> import asyncio
-        >>> from aresnet import get_with_automatic_retry_async
+        >>> from aresilient import get_with_automatic_retry_async
         >>> async def example():
         ...     response = await get_with_automatic_retry_async("https://api.example.com/data")
         ...     return response.json()

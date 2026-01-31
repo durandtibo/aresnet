@@ -1,6 +1,6 @@
 # Design Documentation
 
-This directory contains design documents and proposals for the aresnet library.
+This directory contains design documents and proposals for the aresilient library.
 
 ## Active Documents
 
@@ -12,6 +12,6 @@ This directory contains design documents and proposals for the aresnet library.
 
 ## Summary
 
-The aresnet library currently maintains a **flat structure** with clear separation between synchronous and asynchronous implementations using the `*_async.py` naming convention. This structure is recommended to continue until the library reaches approximately 2,500 lines or 20 files, at which point a modular sub-package structure should be considered.
+The aresilient library currently maintains a **flat structure** with clear separation between synchronous and asynchronous implementations using the `*_async.py` naming convention. This structure is recommended to continue until the library reaches approximately 2,500 lines or 20 files, at which point a modular sub-package structure should be considered.
 
 For details, see [LIBRARY_STRUCTURE_PROPOSAL.md](LIBRARY_STRUCTURE_PROPOSAL.md).

@@ -1,28 +1,27 @@
-r"""Contain asynchronous HTTP POST request with automatic retry
-logic."""
+r"""Contain synchronous HTTP GET request with automatic retry logic."""
 
 from __future__ import annotations
 
-__all__ = ["post_with_automatic_retry_async"]
+__all__ = ["get_with_automatic_retry"]
 
 from typing import Any
 
 import httpx
 
-from aresnet.config import (
+from aresilient.config import (
     DEFAULT_BACKOFF_FACTOR,
     DEFAULT_MAX_RETRIES,
     DEFAULT_TIMEOUT,
     RETRY_STATUS_CODES,
 )
-from aresnet.request_async import request_with_automatic_retry_async
-from aresnet.utils import validate_retry_params
+from aresilient.request import request_with_automatic_retry
+from aresilient.utils import validate_retry_params
 
 
-async def post_with_automatic_retry_async(
+def get_with_automatic_retry(
     url: str,
     *,
-    client: httpx.AsyncClient | None = None,
+    client: httpx.Client | None = None,
     timeout: float | httpx.Timeout = DEFAULT_TIMEOUT,
     max_retries: int = DEFAULT_MAX_RETRIES,
     backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
@@ -30,17 +29,17 @@ async def post_with_automatic_retry_async(
     jitter_factor: float = 0.0,
     **kwargs: Any,
 ) -> httpx.Response:
-    r"""Send an HTTP POST request asynchronously with automatic retry
-    logic for transient errors.
+    r"""Send an HTTP GET request with automatic retry logic for transient
+    errors.
 
-    This function performs an HTTP POST request with a configured retry policy
+    This function performs an HTTP GET request with a configured retry policy
     for transient server errors (429, 500, 502, 503, 504). It applies an
     exponential backoff retry strategy. The function validates the HTTP
     response and raises detailed errors for failures.
 
     Args:
-        url: The URL to send the POST request to.
-        client: An optional httpx.AsyncClient object to use for making requests.
+        url: The URL to send the GET request to.
+        client: An optional httpx.Client object to use for making requests.
             If None, a new client will be created and closed after use.
         timeout: Maximum seconds to wait for the server response.
             Only used if client is None. Must be > 0.
@@ -55,7 +54,7 @@ async def post_with_automatic_retry_async(
             and this jitter is ADDED to the base sleep time. Set to 0 to disable
             jitter (default). Recommended value is 0.1 for 10% jitter to prevent
             thundering herd issues. Must be >= 0.
-        **kwargs: Additional keyword arguments passed to ``httpx.AsyncClient.post()``.
+        **kwargs: Additional keyword arguments passed to ``httpx.Client.get()``.
 
     Returns:
         An httpx.Response object containing the server's HTTP response.
@@ -68,15 +67,8 @@ async def post_with_automatic_retry_async(
 
     Example:
         ```pycon
-        >>> import asyncio
-        >>> from aresnet import post_with_automatic_retry_async
-        >>> async def example():
-        ...     response = await post_with_automatic_retry_async(
-        ...         "https://api.example.com/data", json={"key": "value"}
-        ...     )
-        ...     return response.json()
-        ...
-        >>> asyncio.run(example())  # doctest: +SKIP
+        >>> from aresilient import get_with_automatic_retry
+        >>> response = get_with_automatic_retry("https://api.example.com/data")  # doctest: +SKIP
 
         ```
     """
@@ -89,12 +81,12 @@ async def post_with_automatic_retry_async(
     )
 
     owns_client = client is None
-    client = client or httpx.AsyncClient(timeout=timeout)
+    client = client or httpx.Client(timeout=timeout)
     try:
-        return await request_with_automatic_retry_async(
+        return request_with_automatic_retry(
             url=url,
-            method="POST",
-            request_func=client.post,
+            method="GET",
+            request_func=client.get,
             max_retries=max_retries,
             backoff_factor=backoff_factor,
             status_forcelist=status_forcelist,
@@ -103,4 +95,4 @@ async def post_with_automatic_retry_async(
         )
     finally:
         if owns_client:
-            await client.aclose()
+            client.close()

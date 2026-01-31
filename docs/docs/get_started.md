@@ -9,19 +9,19 @@ to keep your system in order.
 The following command installs the latest stable version of the library:
 
 ```shell
-uv pip install aresnet
+uv pip install aresilient
 ```
 
 To install the latest development version from GitHub:
 
 ```shell
-uv pip install git+https://github.com/durandtibo/aresnet.git
+uv pip install git+https://github.com/durandtibo/aresilient.git
 ```
 
 To install a specific version:
 
 ```shell
-uv pip install aresnet==0.3.0
+uv pip install aresilient==0.3.0
 ```
 
 ## Installing with `pip`
@@ -29,40 +29,40 @@ uv pip install aresnet==0.3.0
 The following command installs the latest stable version of the library:
 
 ```shell
-pip install aresnet
+pip install aresilient
 ```
 
 To install the latest development version from GitHub:
 
 ```shell
-pip install git+https://github.com/durandtibo/aresnet.git
+pip install git+https://github.com/durandtibo/aresilient.git
 ```
 
 To install a specific version:
 
 ```shell
-pip install aresnet==0.3.0
+pip install aresilient==0.3.0
 ```
 
 ## Verifying Installation
 
-After installation, you can verify that aresnet is correctly installed by running:
+After installation, you can verify that aresilient is correctly installed by running:
 
 ```shell
-python -c "import aresnet; print(aresnet.__version__)"
+python -c "import aresilient; print(aresilient.__version__)"
 ```
 
 Or try a simple example:
 
 ```python
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Make a simple GET request (this is a safe example that won't actually execute)
 # response = get_with_automatic_retry("https://api.example.com/data")
 # print(response.json())
 
 # Verify the module is properly imported
-print("aresnet imported successfully!")
+print("aresilient imported successfully!")
 ```
 
 ### Testing Async Support
@@ -71,7 +71,7 @@ To verify async support is working:
 
 ```python
 import asyncio
-from aresnet import get_with_automatic_retry_async
+from aresilient import get_with_automatic_retry_async
 
 
 async def test_async():
@@ -85,7 +85,7 @@ print(f"Test result: {result}")
 
 ## Installing from source
 
-To install `aresnet` from source, you can follow the steps below.
+To install `aresilient` from source, you can follow the steps below.
 
 ### Prerequisites
 
@@ -96,8 +96,8 @@ installation instructions.
 ### Clone the Repository
 
 ```shell
-git clone git@github.com:durandtibo/aresnet.git
-cd aresnet
+git clone git@github.com:durandtibo/aresilient.git
+cd aresilient
 ```
 
 ### Create a Virtual Environment
@@ -115,7 +115,7 @@ Alternatively, you can create a conda virtual environment:
 
 ```shell
 make conda
-conda activate aresnet
+conda activate aresilient
 make install
 ```
 
@@ -145,7 +145,7 @@ This will run the test suite with coverage reporting.
 
 ## Development Setup
 
-If you plan to contribute to aresnet, please also install the development tools.
+If you plan to contribute to aresilient, please also install the development tools.
 
 Using `uv`:
 
@@ -165,5 +165,5 @@ Then install the pre-commit hooks:
 pre-commit install
 ```
 
-See [CONTRIBUTING.md](https://github.com/durandtibo/aresnet/blob/main/.github/CONTRIBUTING.md) for
+See [CONTRIBUTING.md](https://github.com/durandtibo/aresilient/blob/main/.github/CONTRIBUTING.md) for
 more information about contributing.

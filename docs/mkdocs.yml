@@ -1,4 +1,4 @@
-site_name: aresnet
+site_name: aresilient
 theme:
   name: material
   features:
@@ -22,10 +22,10 @@ nav:
   - User Guide: user_guide.md
   - Reference:
       - API Reference: refs/index.md
-  - GitHub: https://github.com/durandtibo/aresnet
+  - GitHub: https://github.com/durandtibo/aresilient
 
-repo_url: https://github.com/durandtibo/aresnet
-repo_name: durandtibo/aresnet
+repo_url: https://github.com/durandtibo/aresilient
+repo_name: durandtibo/aresilient
 
 markdown_extensions:
   - pymdownx.highlight

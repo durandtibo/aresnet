@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import TYPE_CHECKING
 
-from aresnet.exceptions import HttpRequestError
+from aresilient.exceptions import HttpRequestError
 
 if TYPE_CHECKING:
     import httpx
@@ -55,7 +55,7 @@ def validate_retry_params(
 
     Example:
         ```pycon
-        >>> from aresnet.utils import validate_retry_params
+        >>> from aresilient.utils import validate_retry_params
         >>> validate_retry_params(max_retries=3, backoff_factor=0.5)
         >>> validate_retry_params(max_retries=3, backoff_factor=0.5, jitter_factor=0.1)
         >>> validate_retry_params(max_retries=3, backoff_factor=0.5, timeout=10.0)
@@ -100,7 +100,7 @@ def parse_retry_after(retry_after_header: str | None) -> float | None:
 
     Example:
         ```pycon
-        >>> from aresnet.utils import parse_retry_after
+        >>> from aresilient.utils import parse_retry_after
         >>> # Parse integer seconds
         >>> parse_retry_after("120")
         120.0
@@ -173,7 +173,7 @@ def calculate_sleep_time(
 
     Example:
         ```pycon
-        >>> from aresnet.utils import calculate_sleep_time
+        >>> from aresilient.utils import calculate_sleep_time
         >>> # First retry with backoff_factor=0.3, no jitter
         >>> calculate_sleep_time(0, 0.3, 0.0, None)
         0.3
@@ -243,7 +243,7 @@ def handle_response(
     Example:
         ```pycon
         >>> import httpx
-        >>> from aresnet.utils import handle_response
+        >>> from aresilient.utils import handle_response
         >>> # This would pass for a retryable status code
         >>> # handle_response(response, "https://api.example.com", "GET", (429, 503))
 
@@ -293,7 +293,7 @@ def handle_timeout_exception(
 
     Example:
         ```pycon
-        >>> from aresnet.utils import handle_timeout_exception
+        >>> from aresilient.utils import handle_timeout_exception
         >>> # This would raise an error on the last attempt
         >>> # handle_timeout_exception(exc, "https://api.example.com", "GET", 3, 3)
 
@@ -340,7 +340,7 @@ def handle_request_error(
 
     Example:
         ```pycon
-        >>> from aresnet.utils import handle_request_error
+        >>> from aresilient.utils import handle_request_error
         >>> # This would raise an error on the last attempt
         >>> # handle_request_error(exc, "https://api.example.com", "GET", 3, 3)
 

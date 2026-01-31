@@ -9,12 +9,12 @@ import logging
 import time
 from typing import TYPE_CHECKING, Any
 
-from aresnet.config import (
+from aresilient.config import (
     DEFAULT_BACKOFF_FACTOR,
     DEFAULT_MAX_RETRIES,
     RETRY_STATUS_CODES,
 )
-from aresnet.utils import (
+from aresilient.utils import (
     calculate_sleep_time,
     handle_request_error,
     handle_response,
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 import httpx
 
-from aresnet.exceptions import HttpRequestError
+from aresilient.exceptions import HttpRequestError
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -87,7 +87,7 @@ def request_with_automatic_retry(
     Example:
         ```pycon
         >>> import httpx
-        >>> from aresnet import request_with_automatic_retry
+        >>> from aresilient import request_with_automatic_retry
         >>> with httpx.Client() as client:
         ...     response = request_with_automatic_retry(
         ...         url="https://api.example.com/data",

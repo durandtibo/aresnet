@@ -46,7 +46,7 @@ class HttpRequestError(RuntimeError):
         Raising an error for a failed GET request:
 
         ```pycon
-        >>> from aresnet import HttpRequestError
+        >>> from aresilient import HttpRequestError
         >>> raise HttpRequestError(
         ...     method="GET",
         ...     url="https://api.example.com/data",

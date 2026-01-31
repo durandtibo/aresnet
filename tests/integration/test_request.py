@@ -3,8 +3,8 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from aresnet import HttpRequestError
-from aresnet.request import request_with_automatic_retry
+from aresilient import HttpRequestError
+from aresilient.request import request_with_automatic_retry
 
 # Use httpbin.org for real HTTP testing
 HTTPBIN_URL = "https://httpbin.org"

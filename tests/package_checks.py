@@ -5,7 +5,7 @@ import sys
 
 import httpx
 
-import aresnet
+import aresilient
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -16,14 +16,14 @@ HTTPBIN_URL = "https://httpbin.org"
 def check_get_with_automatic_retry() -> None:
     logger.info("Checking get_with_automatic_retry...")
     with httpx.Client() as client:
-        response = aresnet.get_with_automatic_retry(url=f"{HTTPBIN_URL}/get", client=client)
+        response = aresilient.get_with_automatic_retry(url=f"{HTTPBIN_URL}/get", client=client)
     assert response.status_code == 200
 
 
 def check_post_with_automatic_retry() -> None:
     logger.info("Checking post_with_automatic_retry...")
     with httpx.Client() as client:
-        response = aresnet.post_with_automatic_retry(url=f"{HTTPBIN_URL}/post", client=client)
+        response = aresilient.post_with_automatic_retry(url=f"{HTTPBIN_URL}/post", client=client)
     assert response.status_code == 200
 
 

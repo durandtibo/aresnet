@@ -1,6 +1,6 @@
 # User Guide
 
-This guide provides comprehensive instructions on how to use `aresnet` for making resilient HTTP
+This guide provides comprehensive instructions on how to use `aresilient` for making resilient HTTP
 requests with automatic retry logic.
 
 ## Table of Contents
@@ -20,7 +20,7 @@ requests with automatic retry logic.
 The simplest way to make an HTTP GET request with automatic retry:
 
 ```python
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Basic GET request
 response = get_with_automatic_retry("https://api.example.com/users")
@@ -32,7 +32,7 @@ print(response.json())
 POST requests work similarly with support for JSON payloads and form data:
 
 ```python
-from aresnet import post_with_automatic_retry
+from aresilient import post_with_automatic_retry
 
 # POST with JSON payload
 response = post_with_automatic_retry(
@@ -49,10 +49,10 @@ response = post_with_automatic_retry(
 
 ### Other HTTP Methods
 
-`aresnet` supports all common HTTP methods:
+`aresilient` supports all common HTTP methods:
 
 ```python
-from aresnet import (
+from aresilient import (
     put_with_automatic_retry,
     delete_with_automatic_retry,
     patch_with_automatic_retry,
@@ -74,14 +74,14 @@ response = patch_with_automatic_retry(
 
 ## Async Usage
 
-`aresnet` provides asynchronous versions of all HTTP methods for use in async applications.
+`aresilient` provides asynchronous versions of all HTTP methods for use in async applications.
 All async functions have the same parameters as their synchronous counterparts.
 
 ### Making Async GET Requests
 
 ```python
 import asyncio
-from aresnet import get_with_automatic_retry_async
+from aresilient import get_with_automatic_retry_async
 
 
 async def fetch_data():
@@ -98,7 +98,7 @@ print(data)
 
 ```python
 import asyncio
-from aresnet import post_with_automatic_retry_async
+from aresilient import post_with_automatic_retry_async
 
 
 async def create_user():
@@ -119,7 +119,7 @@ print(f"Status: {status}")
 All HTTP methods have async versions:
 
 ```python
-from aresnet import (
+from aresilient import (
     put_with_automatic_retry_async,
     delete_with_automatic_retry_async,
     patch_with_automatic_retry_async,
@@ -133,7 +133,7 @@ For better performance with multiple async requests, reuse an `httpx.AsyncClient
 ```python
 import asyncio
 import httpx
-from aresnet import get_with_automatic_retry_async, post_with_automatic_retry_async
+from aresilient import get_with_automatic_retry_async, post_with_automatic_retry_async
 
 
 async def fetch_multiple_resources():
@@ -162,7 +162,7 @@ Process multiple URLs concurrently for better performance:
 
 ```python
 import asyncio
-from aresnet import get_with_automatic_retry_async
+from aresilient import get_with_automatic_retry_async
 
 
 async def fetch_all(urls):
@@ -184,10 +184,10 @@ responses = asyncio.run(fetch_all(urls))
 
 ### Default Configuration
 
-`aresnet` comes with sensible defaults:
+`aresilient` comes with sensible defaults:
 
 ```python
-from aresnet import (
+from aresilient import (
     DEFAULT_TIMEOUT,  # 10.0 seconds
     DEFAULT_MAX_RETRIES,  # 3 retries (4 total attempts)
     DEFAULT_BACKOFF_FACTOR,  # 0.3 seconds
@@ -205,7 +205,7 @@ print(f"Retry on status codes: {RETRY_STATUS_CODES}")
 Control how long to wait for a server response:
 
 ```python
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Short timeout for quick responses
 response = get_with_automatic_retry(
@@ -222,7 +222,7 @@ You can also use httpx.Timeout for fine-grained control:
 
 ```python
 import httpx
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Different timeouts for different operations
 timeout = httpx.Timeout(
@@ -240,7 +240,7 @@ response = get_with_automatic_retry("https://api.example.com/data", timeout=time
 Control how many times and how long between retries:
 
 ```python
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # More aggressive retry
 response = get_with_automatic_retry(
@@ -301,10 +301,10 @@ herd problem). Set `jitter_factor=0.1` for 10% jitter, which is recommended for 
 
 ### Customizing Retryable Status Codes
 
-By default, `aresnet` retries on status codes 429, 500, 502, 503, and 504. You can customize this:
+By default, `aresilient` retries on status codes 429, 500, 502, 503, and 504. You can customize this:
 
 ```python
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Only retry on rate limiting
 response = get_with_automatic_retry(
@@ -325,7 +325,7 @@ response = get_with_automatic_retry(
 
 ### Retry-After Header Support
 
-When a server returns a `Retry-After` header (commonly with 429 or 503 status codes), `aresnet`
+When a server returns a `Retry-After` header (commonly with 429 or 503 status codes), `aresilient`
 automatically uses the server's suggested wait time instead of exponential backoff. This ensures
 compliance with rate limiting and helps avoid overwhelming the server.
 
@@ -333,10 +333,10 @@ The `Retry-After` header supports two formats:
 
 ```python
 # Server responds with: Retry-After: 120
-# aresnet will wait 120 seconds before retrying
+# aresilient will wait 120 seconds before retrying
 
 # Server responds with: Retry-After: Wed, 21 Oct 2015 07:28:00 GMT
-# aresnet will wait until this time before retrying
+# aresilient will wait until this time before retrying
 ```
 
 The retry delay from the `Retry-After` header is used automatically - you don't need to configure
@@ -354,7 +354,7 @@ For advanced configurations like custom headers, authentication, or connection p
 
 ```python
 import httpx
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Create a client with custom headers
 with httpx.Client(
@@ -372,7 +372,7 @@ When making multiple requests, reuse the same client for better performance:
 
 ```python
 import httpx
-from aresnet import get_with_automatic_retry, post_with_automatic_retry
+from aresilient import get_with_automatic_retry, post_with_automatic_retry
 
 with httpx.Client(headers={"Authorization": "Bearer token"}, timeout=30.0) as client:
     # Multiple requests using the same client
@@ -390,7 +390,7 @@ with httpx.Client(headers={"Authorization": "Bearer token"}, timeout=30.0) as cl
 All `**kwargs` are passed directly to the underlying httpx methods:
 
 ```python
-from aresnet import get_with_automatic_retry, post_with_automatic_retry
+from aresilient import get_with_automatic_retry, post_with_automatic_retry
 
 # GET with query parameters
 response = get_with_automatic_retry(
@@ -420,10 +420,10 @@ response = post_with_automatic_retry(
 
 ### Understanding HttpRequestError
 
-`aresnet` raises `HttpRequestError` when a request fails after all retries:
+`aresilient` raises `HttpRequestError` when a request fails after all retries:
 
 ```python
-from aresnet import get_with_automatic_retry, HttpRequestError
+from aresilient import get_with_automatic_retry, HttpRequestError
 
 try:
     response = get_with_automatic_retry("https://api.example.com/data")
@@ -443,7 +443,7 @@ except HttpRequestError as e:
 When a request times out after all retries:
 
 ```python
-from aresnet import get_with_automatic_retry, HttpRequestError
+from aresilient import get_with_automatic_retry, HttpRequestError
 
 try:
     response = get_with_automatic_retry(
@@ -460,7 +460,7 @@ except HttpRequestError as e:
 When the connection fails (DNS errors, connection refused, etc.):
 
 ```python
-from aresnet import get_with_automatic_retry, HttpRequestError
+from aresilient import get_with_automatic_retry, HttpRequestError
 
 try:
     response = get_with_automatic_retry("https://nonexistent-domain.invalid")
@@ -474,7 +474,7 @@ except HttpRequestError as e:
 When the server returns an error status code:
 
 ```python
-from aresnet import get_with_automatic_retry, HttpRequestError
+from aresilient import get_with_automatic_retry, HttpRequestError
 
 try:
     response = get_with_automatic_retry("https://api.example.com/not-found")
@@ -492,7 +492,7 @@ except HttpRequestError as e:
 Check response status and content:
 
 ```python
-from aresnet import get_with_automatic_retry, HttpRequestError
+from aresilient import get_with_automatic_retry, HttpRequestError
 
 try:
     response = get_with_automatic_retry("https://api.example.com/data")
@@ -517,7 +517,7 @@ Error handling works the same way with async functions:
 
 ```python
 import asyncio
-from aresnet import get_with_automatic_retry_async, HttpRequestError
+from aresilient import get_with_automatic_retry_async, HttpRequestError
 
 
 async def fetch_with_error_handling():
@@ -542,7 +542,7 @@ For HTTP methods not directly supported or for custom needs, use the
 
 ```python
 import httpx
-from aresnet import request_with_automatic_retry
+from aresilient import request_with_automatic_retry
 
 # Example: Using HEAD method
 with httpx.Client() as client:
@@ -569,7 +569,7 @@ with httpx.Client() as client:
 ```python
 import asyncio
 import httpx
-from aresnet import request_with_automatic_retry_async
+from aresilient import request_with_automatic_retry_async
 
 
 async def make_custom_request():
@@ -591,7 +591,7 @@ content_length = asyncio.run(make_custom_request())
 
 ```python
 import httpx
-from aresnet import request_with_automatic_retry
+from aresilient import request_with_automatic_retry
 
 
 def custom_api_call():
@@ -633,7 +633,7 @@ When making multiple requests, reuse the client to benefit from connection pooli
 
 ```python
 import httpx
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Good: Reuse client
 with httpx.Client() as client:
@@ -691,7 +691,7 @@ When making multiple HTTP requests, async can significantly improve performance:
 ```python
 import asyncio
 import httpx
-from aresnet import get_with_automatic_retry_async
+from aresilient import get_with_automatic_retry_async
 
 
 async def fetch_all_data(urls):
@@ -724,7 +724,7 @@ results = asyncio.run(fetch_all_data(urls))
 
 ```python
 # Synchronous example - simple script
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 response = get_with_automatic_retry("https://api.example.com/data")
 print(response.json())
@@ -733,7 +733,7 @@ print(response.json())
 ```python
 # Async example - FastAPI application
 from fastapi import FastAPI
-from aresnet import get_with_automatic_retry_async
+from aresilient import get_with_automatic_retry_async
 
 app = FastAPI()
 
@@ -746,13 +746,13 @@ async def fetch_data():
 
 ### 7. Enable Debug Logging for Troubleshooting
 
-`aresnet` uses Python's standard `logging` module to provide detailed debug information about
+`aresilient` uses Python's standard `logging` module to provide detailed debug information about
 retries, backoff times, and errors. This can be helpful for troubleshooting issues or understanding
 retry behavior.
 
 ```python
 import logging
-from aresnet import get_with_automatic_retry
+from aresilient import get_with_automatic_retry
 
 # Enable debug logging to see retry details
 logging.basicConfig(level=logging.DEBUG)
@@ -767,9 +767,9 @@ response = get_with_automatic_retry("https://api.example.com/data")
 
 Example debug output:
 ```
-DEBUG:aresnet.request:GET request to https://api.example.com/data failed with status 503 (attempt 1/4)
-DEBUG:aresnet.utils:Waiting 0.30s before retry
-DEBUG:aresnet.request:GET request to https://api.example.com/data succeeded on attempt 2
+DEBUG:aresilient.request:GET request to https://api.example.com/data failed with status 503 (attempt 1/4)
+DEBUG:aresilient.utils:Waiting 0.30s before retry
+DEBUG:aresilient.request:GET request to https://api.example.com/data succeeded on attempt 2
 ```
 
 For production use, keep the default log level (INFO or WARNING) to avoid excessive logging.

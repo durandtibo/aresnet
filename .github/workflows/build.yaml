@@ -28,7 +28,7 @@ jobs:
       - name: Verify Build
         uses: durandtibo/verify-uv-build-action@v0.0.7
         with:
-          package-name: aresnet
+          package-name: aresilient
           package-extra: ${{ matrix.package-extra }}
           package-dependencies: ""
           dist-type: ${{ matrix.dist-type }}
@@ -58,7 +58,7 @@ jobs:
       - name: Verify Build
         uses: durandtibo/verify-uv-build-action@v0.0.7
         with:
-          package-name: aresnet
+          package-name: aresilient
           package-extra: all
           package-dependencies: ""
           dist-type: ${{ matrix.dist-type }}

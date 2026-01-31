@@ -1,4 +1,4 @@
-r"""aresnet - Resilient HTTP request library with automatic retry logic.
+r"""aresilient - Resilient HTTP request library with automatic retry logic.
 
 This package provides resilient HTTP request functionality with automatic
 retry logic and exponential backoff. Built on top of the modern httpx library,
@@ -16,7 +16,7 @@ Key Features:
 
 Example:
     ```pycon
-    >>> from aresnet import get_with_automatic_retry
+    >>> from aresilient import get_with_automatic_retry
     >>> response = get_with_automatic_retry("https://api.example.com/data")  # doctest: +SKIP
 
     ```
@@ -47,25 +47,25 @@ __all__ = [
 
 from importlib.metadata import PackageNotFoundError, version
 
-from aresnet.config import (
+from aresilient.config import (
     DEFAULT_BACKOFF_FACTOR,
     DEFAULT_MAX_RETRIES,
     DEFAULT_TIMEOUT,
     RETRY_STATUS_CODES,
 )
-from aresnet.delete import delete_with_automatic_retry
-from aresnet.delete_async import delete_with_automatic_retry_async
-from aresnet.exceptions import HttpRequestError
-from aresnet.get import get_with_automatic_retry
-from aresnet.get_async import get_with_automatic_retry_async
-from aresnet.patch import patch_with_automatic_retry
-from aresnet.patch_async import patch_with_automatic_retry_async
-from aresnet.post import post_with_automatic_retry
-from aresnet.post_async import post_with_automatic_retry_async
-from aresnet.put import put_with_automatic_retry
-from aresnet.put_async import put_with_automatic_retry_async
-from aresnet.request import request_with_automatic_retry
-from aresnet.request_async import request_with_automatic_retry_async
+from aresilient.delete import delete_with_automatic_retry
+from aresilient.delete_async import delete_with_automatic_retry_async
+from aresilient.exceptions import HttpRequestError
+from aresilient.get import get_with_automatic_retry
+from aresilient.get_async import get_with_automatic_retry_async
+from aresilient.patch import patch_with_automatic_retry
+from aresilient.patch_async import patch_with_automatic_retry_async
+from aresilient.post import post_with_automatic_retry
+from aresilient.post_async import post_with_automatic_retry_async
+from aresilient.put import put_with_automatic_retry
+from aresilient.put_async import put_with_automatic_retry_async
+from aresilient.request import request_with_automatic_retry
+from aresilient.request_async import request_with_automatic_retry_async
 
 try:
     __version__ = version(__name__)

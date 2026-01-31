@@ -3,7 +3,7 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from aresnet import HttpRequestError, get_with_automatic_retry
+from aresilient import HttpRequestError, get_with_automatic_retry
 
 # Use httpbin.org for real HTTP testing
 HTTPBIN_URL = "https://httpbin.org"
@@ -70,7 +70,7 @@ def test_get_with_automatic_retry_with_headers() -> None:
         response = get_with_automatic_retry(
             url=f"{HTTPBIN_URL}/headers",
             client=client,
-            headers={"X-Custom-Header": "test-value", "User-Agent": "aresnet-test"},
+            headers={"X-Custom-Header": "test-value", "User-Agent": "aresilient-test"},
         )
 
     assert response.status_code == 200

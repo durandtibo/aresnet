@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 import httpx
 import pytest
 
-from aresnet.exceptions import HttpRequestError
-from aresnet.utils import (
+from aresilient.exceptions import HttpRequestError
+from aresilient.utils import (
     calculate_sleep_time,
     handle_request_error,
     handle_response,
@@ -96,7 +96,7 @@ def test_calculate_sleep_time_exponential_backoff(attempt: int, sleep_time: floa
 
 def test_calculate_sleep_time_with_jitter() -> None:
     """Test that jitter is correctly added to sleep time."""
-    with patch("aresnet.utils.random.uniform", return_value=0.05):
+    with patch("aresilient.utils.random.uniform", return_value=0.05):
         # Base sleep: 1.0 * 2^0 = 1.0
         # Jitter: 0.05 * 1.0 = 0.05
         # Total: 1.05
@@ -131,7 +131,7 @@ def test_calculate_sleep_time_with_retry_after_and_jitter() -> None:
     """Test that jitter is applied to Retry-After value."""
     mock_response = Mock(spec=httpx.Response, headers={"Retry-After": "100"})
 
-    with patch("aresnet.utils.random.uniform", return_value=0.1):
+    with patch("aresilient.utils.random.uniform", return_value=0.1):
         # Base sleep from Retry-After: 100
         # Jitter: 0.1 * 100 = 10
         # Total: 110

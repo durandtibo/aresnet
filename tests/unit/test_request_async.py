@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, Mock, call
 import httpx
 import pytest
 
-from aresnet import HttpRequestError, request_with_automatic_retry_async
+from aresilient import HttpRequestError, request_with_automatic_retry_async
 
 
 @pytest.fixture
