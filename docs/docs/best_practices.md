@@ -305,7 +305,15 @@ results = asyncio.run(process_batch(items, batch_size=100, max_concurrent=5))
 Handle errors gracefully and provide fallback behavior:
 
 ```python
+import logging
 from aresilient import get_with_automatic_retry, HttpRequestError
+
+logger = logging.getLogger(__name__)
+
+def get_cached_profile(user_id: int) -> dict | None:
+    """Get user profile from cache (implementation depends on your cache system)."""
+    # Placeholder - implement based on your caching strategy
+    return None
 
 def get_user_profile(user_id: int) -> dict:
     """Get user profile with fallback to cached data."""
@@ -339,7 +347,10 @@ def get_user_profile(user_id: int) -> dict:
 Try multiple endpoints with fallback:
 
 ```python
+import logging
 from aresilient import get_with_automatic_retry, HttpRequestError
+
+logger = logging.getLogger(__name__)
 
 def fetch_data_with_fallback(resource_id: str) -> dict:
     """Fetch data from primary endpoint with fallback to secondary."""
