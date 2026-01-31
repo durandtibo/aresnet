@@ -22,6 +22,9 @@ nav:
   - User Guide: user_guide.md
   - Reference:
       - API Reference: refs/index.md
+  - FAQ: faq.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
   - GitHub: https://github.com/durandtibo/aresilient
 
 repo_url: https://github.com/durandtibo/aresilient

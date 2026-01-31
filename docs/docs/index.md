@@ -109,6 +109,7 @@ response = get_with_automatic_retry(
     "https://api.example.com/data",
     max_retries=5,  # Retry up to 5 times
     backoff_factor=1.0,  # Exponential backoff factor
+    jitter_factor=0.1,  # Add 10% jitter to prevent thundering herd
     timeout=30.0,  # 30 second timeout
     status_forcelist=(429, 503),  # Only retry on these status codes
 )
