@@ -31,29 +31,34 @@ if TYPE_CHECKING:
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-def validate_retry_params(max_retries: int, backoff_factor: float) -> None:
-    """Validate retry parameters for HTTP requests.
-
-    This function ensures that retry configuration parameters are valid before
-    attempting HTTP requests. It checks that both max_retries and backoff_factor
-    are non-negative values, which are required for the retry logic to work
-    correctly.
+def validate_retry_params(
+    max_retries: int,
+    backoff_factor: float,
+    jitter_factor: float = 0.0,
+    timeout: float | httpx.Timeout | None = None,
+) -> None:
+    """Validate retry parameters.
 
     Args:
         max_retries: Maximum number of retry attempts for failed requests.
             Must be >= 0. A value of 0 means no retries (only the initial attempt).
         backoff_factor: Factor for exponential backoff between retries.
-            Must be >= 0. A value of 0 means no delay between retries.
+            Must be >= 0.
+        jitter_factor: Factor for adding random jitter to backoff delays.
+            Must be >= 0. Recommended value is 0.1 for 10% jitter.
+        timeout: Maximum seconds to wait for the server response.
+            Must be > 0 if provided as a numeric value.
 
     Raises:
-        ValueError: If max_retries is negative.
-        ValueError: If backoff_factor is negative.
+        ValueError: If max_retries, backoff_factor, or jitter_factor are negative,
+            or if timeout is non-positive.
 
     Example:
         ```pycon
         >>> from aresnet.utils import validate_retry_params
         >>> validate_retry_params(max_retries=3, backoff_factor=0.5)
-        >>> # Negative values raise ValueError
+        >>> validate_retry_params(max_retries=3, backoff_factor=0.5, jitter_factor=0.1)
+        >>> validate_retry_params(max_retries=3, backoff_factor=0.5, timeout=10.0)
         >>> validate_retry_params(max_retries=-1, backoff_factor=0.5)  # doctest: +SKIP
 
         ```
@@ -63,6 +68,12 @@ def validate_retry_params(max_retries: int, backoff_factor: float) -> None:
         raise ValueError(msg)
     if backoff_factor < 0:
         msg = f"backoff_factor must be >= 0, got {backoff_factor}"
+        raise ValueError(msg)
+    if jitter_factor < 0:
+        msg = f"jitter_factor must be >= 0, got {jitter_factor}"
+        raise ValueError(msg)
+    if timeout is not None and isinstance(timeout, (int, float)) and timeout <= 0:
+        msg = f"timeout must be > 0, got {timeout}"
         raise ValueError(msg)
 
 
